@@ -1,5 +1,5 @@
 import { userAuthService } from '../services/userService.js';
-import { BadRequestError, UnauthorizedError } from '../../errors.js';
+import { UnauthorizedError, BadRequestError } from '../middlewares/errorMiddleware.js';
 
 class userAuthController {
     static async register(req, res, next) {
@@ -7,7 +7,7 @@ class userAuthController {
             const { email, password, nickname } = req.body;
 
             if (!email || !password || !nickname) {
-                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+                throw new BadRequestError('요청값을 확인해주세요.');
             }
 
             const createUser = await userAuthService.createUser({ email, password, nickname });
@@ -22,7 +22,7 @@ class userAuthController {
             const { email, password } = req.body;
 
             if (!email || !password) {
-                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+                throw new BadRequestError('요청값을 확인해주세요.');
             }
 
             const loginUser = await userAuthService.getUser({ email, password });
@@ -35,7 +35,7 @@ class userAuthController {
     static async isLogin(req, res, next) {
         const userId = req.currentUserId;
         if (!userId) {
-            throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
         }
 
         try {
@@ -50,7 +50,7 @@ class userAuthController {
         const userId = req.currentUserId;
 
         if (!userId) {
-            throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
         }
 
         try {
@@ -65,7 +65,7 @@ class userAuthController {
         const userId = req.currentUserId;
 
         if (!userId) {
-            throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
         }
 
         try {
@@ -81,7 +81,7 @@ class userAuthController {
             const userId = req.params.userId;
 
             if (!userId) {
-                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+                throw new BadRequestError('요청값을 확인해주세요.');
             }
 
             const getInfo = await userAuthService.getUserInfo({ userId });
@@ -97,7 +97,7 @@ class userAuthController {
             const { nickname, description } = req.body;
 
             if (!userId || !nickname || !description) {
-                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+                throw new BadRequestError('요청값을 확인해주세요.');
             }
 
             const toUpdate = { nickname, description };
@@ -114,7 +114,7 @@ class userAuthController {
             const userId = req.params.userId;
 
             if (!userId) {
-                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+                throw new BadRequestError('요청값을 확인해주세요.');
             }
 
             const delInfo = await userAuthService.delUserInfo({ userId });

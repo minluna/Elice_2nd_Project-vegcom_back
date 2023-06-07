@@ -1,5 +1,5 @@
 import { postService } from '../services/postService.js';
-import { BadRequestError, UnauthorizedError } from '../../errors.js';
+import { UnauthorizedError, BadRequestError } from '../middlewares/errorMiddleware.js';
 
 class postController {
     // 1. 전체 피드 시간순
@@ -8,7 +8,7 @@ class postController {
             const userId = req.currentUserId;
 
             if (!userId) {
-                throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+                throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
             }
 
             const posts = await postService.getAllPosts({ userId });
@@ -24,13 +24,13 @@ class postController {
             const userId = req.currentUserId;
 
             if (!userId) {
-                throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+                throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
             }
 
             const postId = req.params.postId;
 
             if (!postId) {
-                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+                throw new BadRequestError('요청값을 확인해주세요.');
             }
 
             const post = await postService.getPost({ userId, postId });
@@ -46,13 +46,13 @@ class postController {
             const userId = req.currentUserId;
 
             if (!userId) {
-                throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+                throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
             }
 
             const { content, imageUrl } = req.body;
 
             if (!content || !imageUrl) {
-                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+                throw new BadRequestError('요청값을 확인해주세요.');
             }
 
             const post = await postService.createPost({ userId, content, imageUrl });
@@ -68,14 +68,14 @@ class postController {
             const userId = req.currentUserId;
 
             if (!userId) {
-                throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+                throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
             }
 
             const postId = req.params.postId;
             const { content, imageUrl } = req.body;
 
             if (!postId || !content || !imageUrl) {
-                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+                throw new BadRequestError('요청값을 확인해주세요.');
             }
 
             const toUpdate = { content, imageUrl };
@@ -93,13 +93,13 @@ class postController {
             const userId = req.currentUserId;
 
             if (!userId) {
-                throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+                throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
             }
 
             const postId = req.params.postId;
 
             if (!postId) {
-                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+                throw new BadRequestError('요청값을 확인해주세요.');
             }
 
             const post = await postService.delPost({ userId, postId });

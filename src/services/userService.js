@@ -1,5 +1,11 @@
 import { User } from '../db/index.js';
-import { ConflictError, UnauthorizedError, BadRequestError, NotFoundError, InternalServerError } from '../../errors.js';
+import {
+    ConflictError,
+    UnauthorizedError,
+    BadRequestError,
+    NotFoundError,
+    InternalServerError,
+} from '../middlewares/errorMiddleware.js';
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -11,7 +17,7 @@ class userAuthService {
         const user = await User.findByEmail({ email });
 
         if (user) {
-            throw ConflictError('EmailAlreadyExists', '이 이메일은 현재 사용중입니다. 다른 이메일을 입력해 주세요.');
+            throw new ConflictError('이 이메일은 현재 사용중입니다. 다른 이메일을 입력해 주세요.');
         }
 
         // 비밀번호 암호화
@@ -29,28 +35,27 @@ class userAuthService {
                 message: '회원가입에 성공했습니다.',
             };
         } catch (error) {
-            throw BadRequestError('RegistrationFailedError', '회원가입에 실패했습니다.');
+            throw new BadRequestError('회원가입에 실패했습니다.');
         }
     }
 
     // 로그인 검사
     static async getUser({ email, password }) {
+        const user = await User.findByEmail({ email });
+
+        // 이메일 검증
+        if (!user) {
+            throw new NotFoundError('해당 이메일은 가입 내역이 없습니다. 다시 한 번 확인해 주세요.');
+        }
+
+        // 비밀번호 확인
+        const correctPasswordHash = user.password;
+        const isPasswordCorrect = await bcrypt.compare(password, correctPasswordHash);
+
+        if (!isPasswordCorrect) {
+            throw new UnauthorizedError('비밀번호가 일치하지 않습니다. 다시 한 번 확인해 주세요.');
+        }
         try {
-            const user = await User.findByEmail({ email });
-
-            // 이메일 검증
-            if (!user) {
-                throw NotFoundError('UserNotFoundEmail', '해당 이메일은 가입 내역이 없습니다. 다시 한 번 확인해 주세요.');
-            }
-
-            // 비밀번호 확인
-            const correctPasswordHash = user.password;
-            const isPasswordCorrect = await bcrypt.compare(password, correctPasswordHash);
-
-            if (!isPasswordCorrect) {
-                throw UnauthorizedError('InvalidCredentials', '비밀번호가 일치하지 않습니다. 다시 한 번 확인해 주세요.');
-            }
-
             // 유저 정보가 있고 비밀번호가 일치하면 JWT 토큰을 생성한다.
             const secretKey = process.env.JWT_SECRET_KEY || 'jwt-secret-key';
             const token = jwt.sign(
@@ -64,7 +69,7 @@ class userAuthService {
                 token,
             };
         } catch (error) {
-            throw UnauthorizedError('LoginFailedError', '로그인에 실패하셨습니다.');
+            throw new UnauthorizedError('로그인에 실패하셨습니다.');
         }
     }
 
@@ -73,7 +78,7 @@ class userAuthService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw NotFoundError('UserNotFoundId', '요청한 사용자의 정보를 찾을 수 없습니다.');
+            throw new NotFoundError('요청한 사용자의 정보를 찾을 수 없습니다.');
         } else {
             return {
                 statusCode: 200,
@@ -87,7 +92,7 @@ class userAuthService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
+            throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
         }
 
         try {
@@ -104,7 +109,7 @@ class userAuthService {
                 },
             };
         } catch (error) {
-            throw InternalServerError('PointLoadFailedError', '유저 포인트 내역 불러오기에 실패했습니다.');
+            throw new InternalServerError('유저 포인트 내역 불러오기에 실패했습니다.');
         }
     }
 
@@ -113,7 +118,7 @@ class userAuthService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
+            throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
         }
 
         try {
@@ -125,7 +130,7 @@ class userAuthService {
                 userCount: getUserCount.userCount,
             };
         } catch (error) {
-            throw InternalServerError('UserCountLoadFailedError', '전체 유저 수 불러오기에 실패했습니다.');
+            throw new InternalServerError('전체 유저 수 불러오기에 실패했습니다.');
         }
     }
 
@@ -134,7 +139,7 @@ class userAuthService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw NotFoundError('UserNotFoundId', '요청한 사용자의 정보를 찾을 수 없습니다.');
+            throw new NotFoundError('요청한 사용자의 정보를 찾을 수 없습니다.');
         } else {
             return {
                 statusCode: 200,
@@ -154,7 +159,7 @@ class userAuthService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw NotFoundError('UserNotFoundId', '요청한 사용자의 정보를 찾을 수 없습니다.');
+            throw new NotFoundError('요청한 사용자의 정보를 찾을 수 없습니다.');
         }
 
         try {
@@ -168,7 +173,7 @@ class userAuthService {
                 message: '유저 정보 수정하기에 성공하셨습니다.',
             };
         } catch (error) {
-            throw InternalServerError('UserUpdateFailedError', '유저 정보 수정하기에 실패했습니다.');
+            throw new InternalServerError('유저 정보 수정하기에 실패했습니다.');
         }
     }
 
@@ -177,7 +182,7 @@ class userAuthService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw NotFoundError('UserNotFoundId', '요청한 사용자의 정보를 찾을 수 없습니다.');
+            throw new NotFoundError('요청한 사용자의 정보를 찾을 수 없습니다.');
         }
 
         try {
@@ -188,7 +193,7 @@ class userAuthService {
                 message: '유저 정보 삭제하기에 성공하셨습니다.',
             };
         } catch (error) {
-            throw InternalServerError('UserDeleteFailedError', '유저 정보 삭제하기에 실패했습니다.');
+            throw new InternalServerError('유저 정보 삭제하기에 실패했습니다.');
         }
     }
 }

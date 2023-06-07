@@ -1,5 +1,5 @@
 import { User, Post } from '../db/index.js';
-import { UnauthorizedError, NotFoundError, InternalServerError } from '../../errors.js';
+import { UnauthorizedError, NotFoundError, InternalServerError } from '../middlewares/errorMiddleware.js';
 
 class postService {
     //1. 전체 피드 시간순
@@ -7,7 +7,7 @@ class postService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
+            throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
         }
 
         try {
@@ -19,7 +19,7 @@ class postService {
                 posts,
             };
         } catch (error) {
-            throw UnauthorizedError('PostListLoadFailedError', '게시물 전체 조회를 실패했습니다.');
+            throw new UnauthorizedError('게시물 전체 조회를 실패했습니다.');
         }
     }
 
@@ -28,13 +28,13 @@ class postService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
+            throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
         }
 
         const post = await Post.findById({ postId });
 
         if (!post) {
-            throw NotFoundError('PostNotFoundId', '요청한 게시물의 정보를 찾을 수 없습니다.');
+            throw new NotFoundError('요청한 게시물의 정보를 찾을 수 없습니다.');
         }
 
         try {
@@ -46,7 +46,7 @@ class postService {
                 post,
             };
         } catch (error) {
-            throw UnauthorizedError('PostLoadFailedError', '게시물 상세 조회를 실패했습니다.');
+            throw new UnauthorizedError('게시물 상세 조회를 실패했습니다.');
         }
     }
 
@@ -55,7 +55,7 @@ class postService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
+            throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
         }
 
         try {
@@ -70,7 +70,7 @@ class postService {
                 message: '게시물 작성을 성공했습니다.',
             };
         } catch (error) {
-            throw InternalServerError('PostCreateFailedError', '게시물 작성을 실패했습니다.');
+            throw new InternalServerError('게시물 작성을 실패했습니다.');
         }
     }
 
@@ -79,13 +79,13 @@ class postService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
+            throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
         }
 
         const post = await Post.findById({ postId });
 
         if (!post) {
-            throw NotFoundError('PostNotFoundId', '요청한 게시물의 정보를 찾을 수 없습니다.');
+            throw new NotFoundError('요청한 게시물의 정보를 찾을 수 없습니다.');
         }
 
         try {
@@ -105,7 +105,7 @@ class postService {
                 message: '게시물 수정을 성공했습니다.',
             };
         } catch (error) {
-            throw InternalServerError('PostUpdateFailedError', '게시물 수정을 실패했습니다.');
+            throw new InternalServerError('게시물 수정을 실패했습니다.');
         }
     }
 
@@ -114,13 +114,13 @@ class postService {
         const user = await User.findById({ userId });
 
         if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
+            throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
         }
 
         const post = await Post.findById({ postId });
 
         if (!post) {
-            throw NotFoundError('PostNotFoundId', '요청한 게시물의 정보를 찾을 수 없습니다.');
+            throw new NotFoundError('요청한 게시물의 정보를 찾을 수 없습니다.');
         }
 
         try {
@@ -131,7 +131,7 @@ class postService {
                 message: '게시물 삭제를 성공했습니다.',
             };
         } catch (error) {
-            throw InternalServerError('PostDeleteFailedError', '게시물 삭제를 실패했습니다.');
+            throw new InternalServerError('게시물 삭제를 실패했습니다.');
         }
     }
 }
