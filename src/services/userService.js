@@ -1,4 +1,4 @@
-import { User } from '../db/index.js';
+import { mysqlDB, User } from '../db/index.js';
 import {
     ConflictError,
     UnauthorizedError,
@@ -13,6 +13,8 @@ import jwt from 'jsonwebtoken';
 class userAuthService {
     // 유저 생성
     static async createUser({ email, password, nickname }) {
+        await mysqlDB.query('START TRANSACTION');
+
         // 이메일 중복 확인
         const user = await User.findByEmail({ email });
 
@@ -30,11 +32,14 @@ class userAuthService {
                 nickname,
             });
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '회원가입에 성공했습니다.',
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
             throw new BadRequestError('회원가입에 실패했습니다.');
         }
     }
@@ -156,6 +161,8 @@ class userAuthService {
 
     // 유저 정보 수정(별명, 설명)
     static async setUserInfo({ userId, toUpdate }) {
+        await mysqlDB.query('START TRANSACTION');
+
         const user = await User.findById({ userId });
 
         if (!user) {
@@ -168,17 +175,22 @@ class userAuthService {
                 await User.update({ userId, fieldToUpdate, newValue });
             }
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '유저 정보 수정하기에 성공하셨습니다.',
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
             throw new InternalServerError('유저 정보 수정하기에 실패했습니다.');
         }
     }
 
     // 유저 정보 삭제
     static async delUserInfo({ userId }) {
+        await mysqlDB.query('START TRANSACTION');
+
         const user = await User.findById({ userId });
 
         if (!user) {
@@ -188,11 +200,14 @@ class userAuthService {
         try {
             await User.delete({ userId });
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '유저 정보 삭제하기에 성공하셨습니다.',
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
             throw new InternalServerError('유저 정보 삭제하기에 실패했습니다.');
         }
     }

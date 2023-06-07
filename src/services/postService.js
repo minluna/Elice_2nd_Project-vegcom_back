@@ -52,6 +52,8 @@ class postService {
 
     //3. 피드 작성하기
     static async createPost({ userId, content, imageUrl }) {
+        await mysqlDB.query('START TRANSACTION');
+
         const user = await User.findById({ userId });
 
         if (!user) {
@@ -65,6 +67,8 @@ class postService {
                 imageUrl,
             });
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 201,
                 message: '게시물 작성을 성공했습니다.',
@@ -76,6 +80,8 @@ class postService {
 
     //4. 피드 수정하기
     static async setPost({ userId, postId, toUpdate }) {
+        await mysqlDB.query('START TRANSACTION');
+
         const user = await User.findById({ userId });
 
         if (!user) {
@@ -100,6 +106,8 @@ class postService {
                 await Post.updatePostImage({ postId, imageUrl });
             }
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '게시물 수정을 성공했습니다.',
@@ -111,6 +119,8 @@ class postService {
 
     //5. 피드 삭제하기
     static async delPost({ userId, postId }) {
+        await mysqlDB.query('START TRANSACTION');
+
         const user = await User.findById({ userId });
 
         if (!user) {
@@ -126,11 +136,14 @@ class postService {
         try {
             await Post.delete({ postId });
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '게시물 삭제를 성공했습니다.',
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
             throw new InternalServerError('게시물 삭제를 실패했습니다.');
         }
     }

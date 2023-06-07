@@ -3,6 +3,8 @@ import { UnauthorizedError, NotFoundError, InternalServerError } from '../middle
 
 class commentService {
     static async createComment({ userId, postId, content, parentId }) {
+        await mysqlDB.query('START TRANSACTION');
+
         const user = await User.findById({ userId });
 
         if (!user) {
@@ -12,16 +14,21 @@ class commentService {
         try {
             await Comment.create({ userId, postId, content, parentId });
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '댓글 추가하기에 성공했습니다.',
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
             throw new InternalServerError('댓글 추가하기에 실패했습니다.');
         }
     }
 
     static async updateComment({ userId, postId, commentId, content }) {
+        await mysqlDB.query('START TRANSACTION');
+
         const user = await User.findById({ userId });
 
         if (!user) {
@@ -37,16 +44,21 @@ class commentService {
         try {
             await Comment.update({ postId, commentId, content });
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '댓글 수정하기에 성공하셨습니다.',
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
             throw new InternalServerError('댓글 수정하기에 실패했습니다.');
         }
     }
 
     static async deleteComment({ userId, commentId }) {
+        await mysqlDB.query('START TRANSACTION');
+
         const user = await User.findById({ userId });
 
         if (!user) {
@@ -61,11 +73,14 @@ class commentService {
         try {
             await Comment.delete({ commentId });
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '댓글 삭제하기에 성공하셨습니다.',
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
             throw new InternalServerError('댓글 삭제하기에 실패했습니다.');
         }
     }
