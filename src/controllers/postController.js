@@ -1,70 +1,114 @@
 import { postService } from '../services/postService.js';
+import { BadRequestError, UnauthorizedError } from '../../errors.js';
 
-// error 처리가 안되서?? try-catch문 사용(안하면 app crush남)
-// 1. 전체 피드 시간순
-async function getAllposts(req, res, next) {
-    try {
-        const posts = await postService.getAllPosts();
+class postController {
+    // 1. 전체 피드 시간순
+    static async getAllposts(req, res, next) {
+        try {
+            const userId = req.currentUserId;
 
-        res.status(posts.statusCode).send(posts);
-    } catch (error) {
-        next(error);
+            if (!userId) {
+                throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            }
+
+            const posts = await postService.getAllPosts({ userId });
+            res.status(posts.statusCode).send({ message: posts.message, postList: posts.posts });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // 2. 피드 상세페이지
+    static async getPost(req, res, next) {
+        try {
+            const userId = req.currentUserId;
+
+            if (!userId) {
+                throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            }
+
+            const postId = req.params.postId;
+
+            if (!postId) {
+                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+            }
+
+            const post = await postService.getPost({ userId, postId });
+            res.status(post.statusCode).send({ message: post.message, post: post.post });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // 3. 피드 작성
+    static async createPost(req, res, next) {
+        try {
+            const userId = req.currentUserId;
+
+            if (!userId) {
+                throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            }
+
+            const { content, imageUrl } = req.body;
+
+            if (!content || !imageUrl) {
+                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+            }
+
+            const post = await postService.createPost({ userId, content, imageUrl });
+            res.status(post.statusCode).send({ message: post.message });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // 4. 피드 수정
+    static async setPost(req, res, next) {
+        try {
+            const userId = req.currentUserId;
+
+            if (!userId) {
+                throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            }
+
+            const postId = req.params.postId;
+            const { content, imageUrl } = req.body;
+
+            if (!postId || !content || !imageUrl) {
+                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+            }
+
+            const toUpdate = { content, imageUrl };
+            const post = await postService.setPost({ userId, postId, toUpdate });
+
+            res.status(post.statusCode).send({ message: post.message });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // 5. 피드 삭제
+    static async delPost(req, res, next) {
+        try {
+            const userId = req.currentUserId;
+
+            if (!userId) {
+                throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            }
+
+            const postId = req.params.postId;
+
+            if (!postId) {
+                throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+            }
+
+            const post = await postService.delPost({ userId, postId });
+
+            res.status(post.statusCode).send({ message: post.message });
+        } catch (error) {
+            next(error);
+        }
     }
 }
 
-// 2. 피드 상세페이지
-async function getPost(req, res, next) {
-    try {
-        const postId = req.params.postId;
-        const post = await postService.getPost({ postId });
-
-        res.status(post.statusCode).send([post.post[0], { message: post.message }]);
-    } catch (error) {
-        next(error);
-    }
-}
-
-// 3. 피드 작성
-async function createPost(req, res, next) {
-    try {
-        // const userId = req.currentUserId;
-        // 일단 userId와 imageUrl을 body에 담아서 보냄
-        const { userId, content, imageUrl } = req.body;
-
-        const post = await postService.createPost({ userId, content, imageUrl });
-
-        res.status(post.statusCode).send([post.createdPost[0], { message: post.message }]);
-    } catch (error) {
-        next(error);
-    }
-}
-
-// 4. 피드 수정
-async function setPost(req, res, next) {
-    try {
-        const postId = req.params.postId;
-        // 일단 사진 body로 받게 설정
-        const { content, imageUrl } = req.body;
-
-        const toUpdate = { content, imageUrl };
-        const post = await postService.setPost({ postId, toUpdate });
-
-        res.status(post.statusCode).send([post.updatedPost[0], { message: post.message }]);
-    } catch (error) {
-        next(error);
-    }
-}
-
-// 5. 피드 삭제
-async function delPost(req, res, next) {
-    try {
-        const postId = req.params.postId;
-        const post = await postService.delPost({ postId });
-
-        res.status(post.statusCode).send({ message: post.message });
-    } catch (error) {
-        next(error);
-    }
-}
-
-export { getAllposts, getPost, createPost, setPost, delPost };
+export { postController };

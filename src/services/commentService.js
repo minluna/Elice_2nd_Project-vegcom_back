@@ -1,4 +1,4 @@
-import { User, Comment } from '../db/index.js';
+import { User, Comment, Post } from '../db/index.js';
 import { UnauthorizedError, NotFoundError, InternalServerError } from '../../errors.js';
 
 class commentService {
@@ -77,12 +77,11 @@ class commentService {
             throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
         }
 
-        // post 기능 합칠 시 주석 해제
-        // const post = await Post.findById({ postId });
+        const post = await Post.findById({ postId });
 
-        // if (!post) {
-        //     throw NotFoundError('PostNotFoundId', '요청한 게시물의 정보를 찾을 수 없습니다.');
-        // }
+        if (!post) {
+            throw NotFoundError('PostNotFoundId', '요청한 게시물의 정보를 찾을 수 없습니다.');
+        }
 
         try {
             const CommentList = await Comment.select({ postId });

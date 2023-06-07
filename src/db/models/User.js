@@ -22,9 +22,9 @@ class User {
         const query =
             'SELECT id, email, nickname, user_image.imageUrl as userImage \
                 FROM user \
-                JOIN user_image \
+                LEFT JOIN user_image \
                 ON user.id = user_image.userId \
-                WHERE id = ? AND deleteAt is null';
+                WHERE user.id = ? AND deleteAt is null';
         const [rows] = await mysqlDB.query(query, [userId]);
 
         return rows[0];

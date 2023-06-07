@@ -3,11 +3,8 @@ import { mysqlDB } from '../index.js';
 class Post {
     //1. 전체 피드 최신순
     static async getAllPosts() {
-        // const query = 'SELECT post.id as postId, post.userId, post.content, post_image.imageUrl
-        // FROM post JOIN post_image ON post.id = post_image.postId
-        // WHERE deleteAt IS NULL ORDER BY createAt DESC';
         const query =
-            'SELECT post.id as postId, post.userId, post.content, post_image.imageUrl FROM post JOIN post_image ON post.id = post_image.postId WHERE deleteYN = "N" ORDER BY createAt DESC';
+            'SELECT post.id as postId, post.userId, post.content, post_image.imageUrl FROM post JOIN post_image ON post.id = post_image.postId WHERE deleteAt IS NULL ORDER BY createAt DESC';
         const [rows] = await mysqlDB.query(query);
 
         return rows;
@@ -15,14 +12,11 @@ class Post {
 
     //2. 피드 상세페이지
     static async getPost({ postId }) {
-        // const query = 'SELECT post.id as postId, post.userId, post.content, post_image.imageUrl
-        // FROM post JOIN post_image ON post.id = post_image.postId
-        // WHERE post.id = ? AND deleteAt IS NULL'
         const query =
-            'SELECT post.id as postId, post.userId, post.content, post_image.imageUrl FROM post JOIN post_image ON post.id = post_image.postId WHERE post.id = ? and deleteYN = "N"';
+            'SELECT post.id as postId, post.userId, post.content, post_image.imageUrl FROM post JOIN post_image ON post.id = post_image.postId WHERE post.id = ? and deleteAt IS NULL';
         const [rows] = await mysqlDB.query(query, [postId]);
 
-        return rows;
+        return rows[0];
     }
 
     //3. 피드 작성하기
@@ -30,11 +24,8 @@ class Post {
         const query1 = 'INSERT INTO post (userId, content) VALUES (?, ?)';
         const query2 = 'INSERT INTO post_image (postId, imageUrl) VALUES (LAST_INSERT_ID(), ?)';
 
-        const [row1] = await mysqlDB.query(query1, [userId, content]);
+        await mysqlDB.query(query1, [userId, content]);
         await mysqlDB.query(query2, [imageUrl]);
-        // postId 값을 얻기 위해서는 row1의 값만 알아도 충분함
-
-        return row1;
     }
 
     //4. 피드 수정하기(포스트와 이미지를 나눠서 작성)
@@ -50,9 +41,16 @@ class Post {
 
     //5. 피드 삭제하기
     static async delete({ postId }) {
-        // const query = 'UPDATE post SET deleteAt = CURRENT_TIMESTAMP WHERE id = ?';
-        const query = 'UPDATE post SET deleteYN = "Y", deleteAt = CURRENT_TIMESTAMP WHERE id = ?';
+        const query = 'UPDATE post SET deleteAt = CURRENT_TIMESTAMP WHERE id = ?';
         await mysqlDB.query(query, [postId]);
+    }
+
+    //6. ID로 피드 검색하기
+    static async findById({ postId }) {
+        const query = 'SELECT * FROM post WHERE id = ? AND deleteAt is NULL';
+        const [rows] = await mysqlDB.query(query, [postId]);
+
+        return rows[0];
     }
 }
 

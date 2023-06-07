@@ -28,20 +28,4 @@ userAuthRouter.put('/:userId', login_required, userAuthController.setInfo);
 // 유저 정보 삭제하기
 userAuthRouter.delete('/:userId', login_required, userAuthController.delInfo);
 
-//전체 유저 수 전달
-userAuthRouter.get('/:userCount', async function (req, res, next) {
-    try {
-        const userCount= await userAuthService.getUserCount();
-
-        if (createUser.errorMessage) {
-            res.status(400).send({ error: userCount.errorMessage });
-            throw new Error(userCount.errorMessage);
-        }
-
-        res.status(200).send(userCount);
-    } catch (error) {
-        next(error);
-    }
-});
-
 export { userAuthRouter };

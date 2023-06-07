@@ -7,17 +7,17 @@ import jwt from 'jsonwebtoken';
 class userAuthService {
     // 유저 생성
     static async createUser({ email, password, nickname }) {
+        // 이메일 중복 확인
+        const user = await User.findByEmail({ email });
+
+        if (user) {
+            throw ConflictError('EmailAlreadyExists', '이 이메일은 현재 사용중입니다. 다른 이메일을 입력해 주세요.');
+        }
+
+        // 비밀번호 암호화
+        const hashedPassword = await bcrypt.hash(password, parseInt(process.env.PW_HASH_COUNT));
+
         try {
-            // 이메일 중복 확인
-            const user = await User.findByEmail({ email });
-
-            if (user) {
-                throw ConflictError('EmailAlreadyExists', '이 이메일은 현재 사용중입니다. 다른 이메일을 입력해 주세요.');
-            }
-
-            // 비밀번호 암호화
-            const hashedPassword = await bcrypt.hash(password, parseInt(process.env.PW_HASH_COUNT));
-
             await User.create({
                 email,
                 password: hashedPassword,
