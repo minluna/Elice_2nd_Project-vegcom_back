@@ -22,6 +22,7 @@ class Like {
     const query = 'SELECT * FROM post_like WHERE postId = ? AND userId = ?';
     const result = await mysqlDB.query(query,[postId, userId]);
 
+    // result = { postId: null, userId: null } 
     return result.length > 0;
   }
   
@@ -43,7 +44,7 @@ class Like {
 
   }
 
-  static async removeLIke({postId, userId}) {
+  static async removeLike({postId, userId}) {
   
     // 좋아요 삭제.
     const query = 'DELETE FROM post_like WHERE postId = ? AND userId = ?';

@@ -13,57 +13,69 @@ class likeService {
 
     static async togglePostLike({postId, userId}) {
         try {
-            const isLiked = await Like.isLiked(postId, userId);
+            const isLiked = await Like.isLiked({postId, userId});
             
             return {
                 statusCode: 200,
-                message: '좋아요 여부 확인.'
+                message: '좋아요 여부 확인.',
+                isLiked
             };
         } catch (error) {
             throw new error ('좋아요 여부 확인에 실패하였습니다.')
         }
     }
 
-    static async countUp() {
+    //좋아요 생성
+    static async create({postId, userId}) {
         
-        //에러처리 코드 넣기.
-        const like = await Like.addAndUpdate();
+        try{
+            const createLike = await Like.addLike({postId,userId})
 
-        return like;
+            return {
+                statusCode: 200,
+                message: '좋아요 생성에 성공했습니다.',
+                createLike
+            };
+        } catch (error) {
+            throw new error ('좋아요 생성에 실패하였습니다.')
+        }        
+    }
+    // 좋아요 삭제
+    static async delete({postId, userId}) {
+        
+        try{
+            const deleteLike = await Like.removeLike({postId,userId})
+
+            return {
+                statusCode: 200,
+                message: '좋아요 삭제에 성공했습니다.',
+                deleteLike
+            };
+        } catch (error) {
+            throw new error ('좋아요 삭제에 실패하였습니다.')
+        }        
     }
 
-    static async countDown() {
-
-        //에러처리 코드 넣기.
-        const like = await Like.DeleteAndUpdate();
-
-        return like;
-    }
+    //좋아요 횟수 증가
+    static async countUpAndDown({postId, userId}) {
+        try {
+            const isLiked = await PostLike.isPostLiked(postId, userId);
+        
+            if (isLiked) {
+              await PostLike.removeLike(postId, userId);
+              await PostLike.decrementLikeCount(postId);
+            } else {
+              await PostLike.addPostLike(postId, userId);
+              await PostLike.incrementLikeCount(postId);
+            }
+          } catch (error) {
+            throw new Error('좋아요 카운트에 실패하였습니다.');
+          }
+        }
+        
 }
 
 export { likeService };
 
    
 
-// postService.js
-
-const PostLike = require('../models/postLike');
-
-// 현재 유저가 좋아요를 누른 상태인지 확인하고 처리
-async function togglePostLike(postId, userId) {
-  try {
-    const isLiked = await PostLike.isPostLiked(postId, userId);
-
-    if (isLiked) {
-      await PostLike.removePostLike(postId, userId);
-      await PostLike.decrementLikeCount(postId);
-    } else {
-      await PostLike.addPostLike(postId, userId);
-      await PostLike.incrementLikeCount(postId);
-    }
-  } catch (error) {
-    throw error;
-  }
-}
-
-module.exports = { togglePostLike };

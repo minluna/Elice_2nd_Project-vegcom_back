@@ -8,7 +8,7 @@ import errors from '../../errors.js';
 async function getAllLike (req, res, next) {
     try {
         const postId = req.body;
-        const like = await likeService.findLike({ postId });
+        const like = await likeService.togglePostLike({ postId });
         
         res.status(200).send(like);
     
@@ -21,7 +21,7 @@ async function createLike (req, res, next) {
     try {
         const userId = req.currentUserId;
         const postId = req.body;
-        const like = await likeService.countUp({userId, postId });
+        const like = await likeService.create({userId, postId });
 
         res.status(200).send(like);
     
@@ -34,7 +34,7 @@ async function deleteLike (req, res, next) {
     try {
         const userId = req.currentUserId;
         const postId = req.body;
-        const like = await likeService.countDown({userId, postId });
+        const like = await likeService.delete({userId, postId });
         
         res.status(200).send(like);
     
@@ -49,7 +49,7 @@ async function updateLike(req, res, next) {
         const userId = req.currentUserId;
         const postId = req.body;
         //여기 수정필요.
-        const like = await likeService.findLike({userId, postId });
+        const like = await likeService.countUpAndDown({userId, postId });
             
         res.status(200).send(like);
         
