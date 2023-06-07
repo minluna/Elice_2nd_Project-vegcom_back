@@ -1,0 +1,8 @@
+{
+  "name": "vegcom",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://kdt-gitlab.elice.io/ai_track/class_07/data_project/team07/vegcom.git",
+  "author": "yyoungl <127117707+yyoungl@users.noreply.github.com>",
+  "license": "MIT"
+}
