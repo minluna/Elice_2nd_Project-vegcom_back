@@ -33,12 +33,15 @@ class User {
     // 유저의 포인트 내역 불러오기
     static async getPoint({ userId }) {
         const query =
-            'SELECT point.userId, \
-                    point.currentPoint, \
+            'SELECT user.id, \
+                    user.nickname, \
+                    user_image.imageUrl, \
                     point.accuPoint \
             FROM user \
             RIGHT JOIN point \
             ON user.id = point.userId \
+            LEFT JOIN user_image \
+            ON user.id = user_image.userId \
             WHERE user.id = ? AND user.deleteAt is null';
         const [rows] = await mysqlDB.query(query, [userId]);
 

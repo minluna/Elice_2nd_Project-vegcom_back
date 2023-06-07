@@ -97,8 +97,9 @@ class userAuthService {
                 statusCode: 200,
                 message: '유저 포인트 내역 불러오기에 성공했습니다.',
                 userPoint: {
-                    id: getUserPoint.userId,
-                    currentPoint: getUserPoint.currentPoint,
+                    id: getUserPoint.id,
+                    nickname: getUserPoint.nickname,
+                    imageUrl: getUserPoint.imageUrl,
                     accuPoint: getUserPoint.accuPoint,
                 },
             };
