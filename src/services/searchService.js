@@ -3,13 +3,13 @@ import { UnauthorizedError, InternalServerError } from '../middlewares/errorMidd
 
 class searchService {
     static async getPost({ userId, keyword }) {
-        const user = await User.findById({ userId });
-
-        if (!user) {
-            throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
-        }
-
         try {
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
             const searchPost = await Search.select({ keyword });
 
             return {
@@ -18,7 +18,11 @@ class searchService {
                 searchPost,
             };
         } catch (error) {
-            throw new InternalServerError('키워드를 포함한 게시물 불러오기에 실패했습니다.');
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError('키워드를 포함한 게시물 불러오기에 실패했습니다.');
+            }
         }
     }
 }
