@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { login_required } from '../middlewares/login_required.js';
 import { loginValidationRules, login_validate } from '../middlewares/login_validate.js';
 import { RegisterValidationRules, register_validate } from '../middlewares/register_validate.js';
-import { params_validate } from '../middlewares/params_validate.js';
+import { userParams_validate } from '../middlewares/userParams_validate.js';
 import { SetUserValidationRules, setUser_validate } from '../middlewares/setUser_validate.js';
 
 import { userAuthController } from '../controllers/userController.js';
@@ -26,12 +26,12 @@ userAuthRouter.get('/point', login_required, userAuthController.getPoint);
 userAuthRouter.get('/userCount', login_required, userAuthController.getCount);
 
 // 유저 정보 불러오기
-userAuthRouter.get('/:userId', login_required, params_validate, userAuthController.getInfo);
+userAuthRouter.get('/:userId', login_required, userParams_validate, userAuthController.getInfo);
 
 // 유저 정보 수정하기(별명, 설명)
 userAuthRouter.put('/:userId', login_required, SetUserValidationRules, setUser_validate, userAuthController.setInfo);
 
 // 유저 정보 삭제하기
-userAuthRouter.delete('/:userId', login_required, params_validate, userAuthController.delInfo);
+userAuthRouter.delete('/:userId', login_required, userParams_validate, userAuthController.delInfo);
 
 export { userAuthRouter };
