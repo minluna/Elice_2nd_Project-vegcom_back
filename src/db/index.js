@@ -6,6 +6,7 @@ import { Rank } from './models/Rank.js';
 import { Comment } from './models/Comment.js';
 import { Search } from './models/Search.js';
 import { Post } from './models/Post.js';
+import { Like } from './models/Like.js';
 
 const mysqlDBPromise = mysql.createPool({
     host: process.env.DB_HOST,
@@ -28,4 +29,7 @@ mysqlDBPromise
         throw err;
     });
 
-export { mysqlDBPromise as mysqlDB, User, Rank, Comment, Search, Post };
+export { mysqlDBPromise as mysqlDB, User, Rank, Comment, Search, Post, Like };
+
+
+

@@ -1,5 +1,4 @@
 import { postService } from '../services/postService.js';
-import { UnauthorizedError, BadRequestError } from '../middlewares/errorMiddleware.js';
 
 class postController {
     // 1. 전체 피드 시간순
