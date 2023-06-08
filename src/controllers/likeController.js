@@ -1,61 +1,92 @@
 import { likeService } from '../services/likeService.js';
-import errors from '../../errors.js';
+import {UnauthorizedError, BadRequestError } from '../middlewares/errorMiddleware.js';
 
 //post요청---> 생성하는 코드
 //put요청 ---> 업데이트 해주는 코드 / 증가,삭제
 
-// 해당 포스트의 총 좋아요
-async function getAllLike (req, res, next) {
-    try {
-        const postId = req.body;
-        const like = await likeService.findLike({ postId });
-        
-        res.status(200).send(like);
-    
-    } catch (error) {
-        next(error);
-    }
-}
-
-async function createLike (req, res, next) {
-    try {
+// 해당 포스트의 좋아요 여부
+class likeController {
+    static async showLike (req, res, next) {
         const userId = req.currentUserId;
-        const postId = req.body;
-        const like = await likeService.countUp({userId, postId });
-
-        res.status(200).send(like);
-    
-    } catch (error) {
-        next(error);
-    }
-}
-
-async function deleteLike (req, res, next) {
-    try {
-        const userId = req.currentUserId;
-        const postId = req.body;
-        const like = await likeService.countDown({userId, postId });
+        const postId = req.params.postId;
         
-        res.status(200).send(like);
-    
-    } catch (error) {
-        next(error);
-    }
-}
-
-    //이거 어뜨케 나누지???
-async function updateLike(req, res, next) {
-    try {
-        const userId = req.currentUserId;
-        const postId = req.body;
-        //여기 수정필요.
-        const like = await likeService.findLike({userId, postId });
-            
-        res.status(200).send(like);
+        if (!userId) {
+            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
+        }
         
-    } catch (error) {            
-        next(error);
+        if (!postId) {
+            throw new BadRequestError('요청값을 확인해주세요.');
+        }
+        
+        try {
+            const like = await likeService.showStatusLike({ postId, userId });
+            return res.status(like.statusCode).send({ message: like.message,  likecount:like.likeCount, likeuser:like.likeUser });
+        } catch (error) {
+            next(error);
+        }
     }
+
+
+    static async createLike (req, res, next) {
+        const userId = req.currentUserId;
+        const postId = req.params.postId;
+        console.log(userId)
+        if (!userId) {
+            throw new UnauthorizedError('로그인란 유저만 사용할 수 있는 서비스입니다.');
+        }
+        
+        if (!postId) {
+            throw new BadRequestError('요청값을 확인해주세요.');
+        }
+        
+        try {
+            const like = await likeService.create({ userId, postId });
+            return res.status(like.statusCode).send({ message: like.message });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async deleteLike (req, res, next) {
+        const userId = req.currentUserId;
+        const postId = req.params.postId;
+        
+        // if (!userId) {
+        //     throw new UnauthorizedError('로그인란 유저만 사용할 수 있는 서비스입니다.');
+        // }
+        
+        // if (!postId) {
+        //     throw new BadRequestError('요청값을 확인해주세요.');
+        // }
+        
+        try {
+            const like = await likeService.delete({ userId, postId });
+            return res.status(like.statusCode).send({ message: like.message });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // static async updateLike (req, res, next) {
+    //     const userId = req.currentUserId;
+    //     const postId = req.body;
+        
+    //     if (!userId) {
+    //         throw new UnauthorizedError('로그인란 유저만 사용할 수 있는 서비스입니다.');
+    //     }
+        
+    //     if (!postId) {
+    //         throw new BadRequestError('요청값을 확인해주세요.');
+    //     }
+        
+    //     try {
+    //         const like = await likeService.countUpAndDown({ userId, postId });
+    //         return res.status(like.statusCode).send({ message: like.message });
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 }
 
-export {getAllLike, createLike, deleteLike, updateLike}
+export { likeController }
+
