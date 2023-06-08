@@ -5,11 +5,13 @@ class Rank {
         const query =
             'SELECT user.id as userId, \
                     user.nickname, \
-                    user.userImage, \
+                    user_image.imageUrl as userImage, \
                     point.accuPoint, \
                     (SELECT count(*) FROM post WHERE post.userId = user.id) as storyCount \
                     FROM user \
-                    JOIN point \
+                    LEFT JOIN user_image \
+                    ON user.id = user_image.userId \
+                    LEFT JOIN point \
                     ON user.id = point.userId \
                     WHERE user.deleteAt is null \
                     ORDER BY point.accuPoint desc';
