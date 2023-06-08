@@ -1,5 +1,4 @@
 import { searchService } from '../services/searchService.js';
-import { UnauthorizedError, BadRequestError } from '../middlewares/errorMiddleware.js';
 
 class searchController {
     static async getKeywordPost(req, res, next) {
