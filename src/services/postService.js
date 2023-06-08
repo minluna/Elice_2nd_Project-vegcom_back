@@ -1,4 +1,4 @@
-import { User, Post } from '../db/index.js';
+import { mysqlDB, User, Post } from '../db/index.js';
 import { UnauthorizedError, NotFoundError, InternalServerError } from '../middlewares/errorMiddleware.js';
 
 class postService {

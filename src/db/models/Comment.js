@@ -27,7 +27,7 @@ class Comment {
 
     // 댓글 삭제
     static async delete({ commentId }) {
-        const query = 'UPDATE comment SET deleteYN = "Y", deleteAt = CURRENT_TIMESTAMP WHERE id = ?';
+        const query = 'UPDATE comment SET deleteAt = CURRENT_TIMESTAMP WHERE id = ?';
         const [rows] = await mysqlDB.query(query, [commentId]);
 
         return rows;
@@ -36,14 +36,17 @@ class Comment {
     // 전체 댓글 불러오기
     static async select({ postId }) {
         const query =
-            'SELECT comment.userId, \
+            'SELECT comment.id, \
+                    comment.userId, \
                     user.nickname, \
-                    user.userImage, \
+                    user_image.imageUrl, \
                     comment.content \
             FROM comment \
             JOIN user \
             ON comment.userId = user.id \
-            WHERE postId = ? AND comment.deleteAt is null AND user.deleteAt is null \
+            LEFT JOIN user_image \
+            ON user.id = user_image.userId \
+            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null \
             ORDER BY comment.createAt desc';
         const [rows] = await mysqlDB.query(query, [postId]);
 
