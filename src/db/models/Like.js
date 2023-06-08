@@ -14,7 +14,7 @@ class Like {
         const query = 'SELECT * FROM post_like WHERE postId = ? AND userId = ?';
         const [rows] = await mysqlDB.query(query, [postId, userId]);
 
-        return rows[0].length > 0;
+        return rows.length > 0;
     }
 
     // 새로운 좋아요 생성
