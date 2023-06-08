@@ -9,6 +9,7 @@ import { rankRouter } from './routers/rankRouter.js';
 import { commentRouter } from './routers/commentRouter.js';
 import { searchRouter } from './routers/searchRouter.js';
 import { postRouter } from './routers/postRouter.js';
+import { likeRouter } from './routers/likeRouter.js';
 
 const app = express();
 
@@ -32,7 +33,7 @@ app.use('/rank', login_required, rankRouter);
 app.use('/comment', login_required, commentRouter);
 app.use('/search', login_required, searchRouter);
 app.use('/post', login_required, postRouter); // 나중에 login_required 추가해야 함
-
+app.use('/like', login_required, likeRouter);
 // 순서 중요 (router 에서 next() 시 아래의 에러 핸들링  middleware로 전달됨)
 app.use(errorMiddleware);
 

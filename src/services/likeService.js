@@ -1,6 +1,5 @@
-import { Like } from '../db/in';
-import errors from '../../errors.js'; //커스텀 에러 집어넣기
-
+import { User, Post, Like, mysqlDB } from '../db/index.js';
+import { UnauthorizedError, NotFoundError, InternalServerError } from '../middlewares/errorMiddleware.js';
 //모델과 서비스를 어떻게 구성할까?
 //좋아요는 한 게시물 당 한번만 가능
 //좋아요 선택시 체크가 안되어 있으면 체크하고, 이미 되어 잇으면 해지
@@ -11,68 +10,137 @@ import errors from '../../errors.js'; //커스텀 에러 집어넣기
 //수정작성 중
 class likeService {
 
-    static async togglePostLike({postId, userId}) {
+    //좋아요 여부 확인
+    static async showStatusLike({postId, userId}) {
         try {
-            const isLiked = await Like.isLiked({postId, userId});
-            
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 토큰입니다.');
+            }
+
+            const likeUser = await Like.isLiked({postId, userId});
+            const likeCount = await Like.getLike({postId});
+
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
-                message: '좋아요 여부 확인.',
-                isLiked
+                message: '좋아요 여부 확인 및 좋아요 누적수 확인.',
+                likeCount,
+                likeUser
             };
+
         } catch (error) {
-            throw new error ('좋아요 여부 확인에 실패하였습니다.')
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError ('좋아요 여부 확인 및 좋아요 누적수 확인에 실패하였습니다.');
+            }
         }
     }
 
     //좋아요 생성
     static async create({postId, userId}) {
         
-        try{
-            const createLike = await Like.addLike({postId,userId})
+        try {
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 토큰입니다.');
+            }
+
+            await Like.create({postId, userId});
+        
+
+            await mysqlDB.query('COMMIT');
 
             return {
                 statusCode: 200,
-                message: '좋아요 생성에 성공했습니다.',
-                createLike
+                message: '좋아요 목록 생성에 성공하셨습니다.',
             };
+
         } catch (error) {
-            throw new error ('좋아요 생성에 실패하였습니다.')
-        }        
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError ('좋아요 목록 생성에 실패하였습니다.');
+            }
+        }
     }
     // 좋아요 삭제
     static async delete({postId, userId}) {
         
-        try{
-            const deleteLike = await Like.removeLike({postId,userId})
+        try {
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 토큰입니다.');
+            }
+
+            
+            await Like.delete({postId, userId});
+
+            await mysqlDB.query('COMMIT');
 
             return {
                 statusCode: 200,
-                message: '좋아요 삭제에 성공했습니다.',
-                deleteLike
+                message: '좋아요 목록 삭제에 성공하였습니다.',
             };
+
         } catch (error) {
-            throw new error ('좋아요 삭제에 실패하였습니다.')
-        }        
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError ('좋아요 목록 삭제에 실패하였습니다.');
+            }
+        }
     }
 
-    //좋아요 횟수 증가
-    static async countUpAndDown({postId, userId}) {
-        try {
-            const isLiked = await PostLike.isPostLiked(postId, userId);
+    // //좋아요 횟수 증가
+    // static async countUpAndDown({postId, userId}) {
+    //     try {
+    //         await mysqlDB.query('START TRANSACTION');
+
+    //         const user = await User.findById({ userId });
+
+    //         if (!user) {
+    //             throw new UnauthorizedError('잘못된 토큰입니다.');
+    //         }
+
+    //         likecount = await Like.getLike({postId, userId});
         
-            if (isLiked) {
-              await PostLike.removeLike(postId, userId);
-              await PostLike.decrementLikeCount(postId);
-            } else {
-              await PostLike.addPostLike(postId, userId);
-              await PostLike.incrementLikeCount(postId);
-            }
-          } catch (error) {
-            throw new Error('좋아요 카운트에 실패하였습니다.');
-          }
-        }
-        
+
+    //         await mysqlDB.query('COMMIT');
+
+    //         return {
+    //             statusCode: 200,
+    //             message: '좋아요 카운트에 성공하였습니다.',
+    //             likecount
+    //         };
+
+    //     } catch (error) {
+    //         await mysqlDB.query('ROLLBACK');
+
+    //         if (error instanceof UnauthorizedError) {
+    //             throw error;
+    //         } else {
+    //             throw new InternalServerError ('좋아요 카운트에 실패하였습니다.');
+    //         }
+    //     }
+    // }
 }
 
 export { likeService };

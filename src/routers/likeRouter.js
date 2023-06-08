@@ -1,17 +1,18 @@
 import { Router } from 'express';
-import { login_required } from '../middlewares/login_required.js';
-import { getAllLike, createLike, deleteLike, updateLike } from '../controllers/likeController.js';
+import { likeController } from '../controllers/likeController.js';
 
 const likeRouter = Router();
 
-// 특정 사용자를 좋아요
-likeRouter.get("/:id", login_required, getAllLike) 
-    
-likeRouter.post("/:id", login_required, createLike)
-    
-likeRouter.put("/:id", login_required, updateLike) 
-    
-likeRouter.delete("/:id", login_required, deleteLike) 
-   
+// 전체 좋아요 개수
+likeRouter.get("/:postId", likeController.showLike) 
+
+//좋아요 목록 생성
+likeRouter.post("/:postId", likeController.createLike)
+
+//좋아요 목록 삭제
+likeRouter.delete("/:postId", likeController.deleteLike) 
+
+// //좋아요 수 증가/감소   
+// likeRouter.put("/:postId", likeController.updateLike) 
 
 export { likeRouter };

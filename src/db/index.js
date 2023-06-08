@@ -6,9 +6,10 @@ import { Rank } from './models/Rank.js';
 import { Comment } from './models/Comment.js';
 import { Search } from './models/Search.js';
 import { Post } from './models/Post.js';
+import { Like } from './models/Like.js';
 
 const mysqlDBPromise = mysql.createPool({
-    host: process.env.DB_IP,
+    host: process.env.DB_HOST,
     user: process.env.DB_NAME,
     password: process.env.DB_PW,
     port: process.env.DB_PORT,
@@ -19,7 +20,7 @@ mysqlDBPromise
     .getConnection()
     .then(() => {
         console.log(
-            `정상적으로 MysqlDB 서버에 연결되었습니다. mysql://${process.env.DB_IP}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`,
+            `정상적으로 MysqlDB 서버에 연결되었습니다. mysql://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`,
         );
     })
     .catch(err => {
@@ -28,4 +29,7 @@ mysqlDBPromise
         throw err;
     });
 
-export { mysqlDBPromise as mysqlDB, User, Rank, Comment, Search, Post };
+export { mysqlDBPromise as mysqlDB, User, Rank, Comment, Search, Post, Like };
+
+
+
