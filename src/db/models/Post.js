@@ -4,7 +4,7 @@ class Post {
     //1. 전체 피드 최신순
     static async getAllPosts() {
         const query =
-            'SELECT post.id as postId, post.userId, post.content, post_image.imageUrl FROM post JOIN post_image ON post.id = post_image.postId WHERE deleteAt IS NULL ORDER BY createAt DESC';
+            'SELECT post.id as postId, post.userId, post.content, post_image.imageUrl FROM post LEFT JOIN post_image ON post.id = post_image.postId WHERE deleteAt IS NULL ORDER BY createAt DESC';
         const [rows] = await mysqlDB.query(query);
 
         return rows;
