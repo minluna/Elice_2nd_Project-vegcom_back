@@ -1,16 +1,16 @@
 import { User, Post } from '../db/index.js';
-import { UnauthorizedError, NotFoundError, InternalServerError } from '../../errors.js';
+import { UnauthorizedError, NotFoundError, InternalServerError } from '../middlewares/errorMiddleware.js';
 
 class postService {
     //1. 전체 피드 시간순
     static async getAllPosts({ userId }) {
-        const user = await User.findById({ userId });
-
-        if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
-        }
-
         try {
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
             const posts = await Post.getAllPosts();
 
             return {
@@ -19,25 +19,25 @@ class postService {
                 posts,
             };
         } catch (error) {
-            throw UnauthorizedError('PostListLoadFailedError', '게시물 전체 조회를 실패했습니다.');
+            throw error;
         }
     }
 
     //2. 피드 상세페이지
     static async getPost({ userId, postId }) {
-        const user = await User.findById({ userId });
-
-        if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
-        }
-
-        const post = await Post.findById({ postId });
-
-        if (!post) {
-            throw NotFoundError('PostNotFoundId', '요청한 게시물의 정보를 찾을 수 없습니다.');
-        }
-
         try {
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
+            const checkPost = await Post.findById({ postId });
+
+            if (!checkPost) {
+                throw new NotFoundError('요청한 게시물의 정보를 찾을 수 없습니다.');
+            }
+
             const post = await Post.getPost({ postId });
 
             return {
@@ -46,49 +46,65 @@ class postService {
                 post,
             };
         } catch (error) {
-            throw UnauthorizedError('PostLoadFailedError', '게시물 상세 조회를 실패했습니다.');
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else if (error instanceof NotFoundError) {
+                throw error;
+            } else {
+                throw new UnauthorizedError('게시물 상세 조회를 실패했습니다.');
+            }
         }
     }
 
     //3. 피드 작성하기
     static async createPost({ userId, content, imageUrl }) {
-        const user = await User.findById({ userId });
-
-        if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
-        }
-
         try {
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
             await Post.create({
                 userId,
                 content,
                 imageUrl,
             });
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 201,
                 message: '게시물 작성을 성공했습니다.',
             };
         } catch (error) {
-            throw InternalServerError('PostCreateFailedError', '게시물 작성을 실패했습니다.');
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError('게시물 작성을 실패했습니다.');
+            }
         }
     }
 
     //4. 피드 수정하기
     static async setPost({ userId, postId, toUpdate }) {
-        const user = await User.findById({ userId });
-
-        if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
-        }
-
-        const post = await Post.findById({ postId });
-
-        if (!post) {
-            throw NotFoundError('PostNotFoundId', '요청한 게시물의 정보를 찾을 수 없습니다.');
-        }
-
         try {
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
+            const post = await Post.findById({ postId });
+
+            if (!post) {
+                throw new NotFoundError('요청한 게시물의 정보를 찾을 수 없습니다.');
+            }
+
             if (toUpdate.content) {
                 const fieldToUpdate = 'content';
                 const newValue = toUpdate.content;
@@ -100,38 +116,58 @@ class postService {
                 await Post.updatePostImage({ postId, imageUrl });
             }
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '게시물 수정을 성공했습니다.',
             };
         } catch (error) {
-            throw InternalServerError('PostUpdateFailedError', '게시물 수정을 실패했습니다.');
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else if (error instanceof NotFoundError) {
+                throw error;
+            } else {
+                throw new InternalServerError('게시물 수정을 실패했습니다.');
+            }
         }
     }
 
     //5. 피드 삭제하기
     static async delPost({ userId, postId }) {
-        const user = await User.findById({ userId });
-
-        if (!user) {
-            throw UnauthorizedError('InvalidToken', '잘못된 또는 만료된 토큰입니다.');
-        }
-
-        const post = await Post.findById({ postId });
-
-        if (!post) {
-            throw NotFoundError('PostNotFoundId', '요청한 게시물의 정보를 찾을 수 없습니다.');
-        }
-
         try {
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
+            const post = await Post.findById({ postId });
+
+            if (!post) {
+                throw new NotFoundError('요청한 게시물의 정보를 찾을 수 없습니다.');
+            }
+
             await Post.delete({ postId });
+
+            await mysqlDB.query('COMMIT');
 
             return {
                 statusCode: 200,
                 message: '게시물 삭제를 성공했습니다.',
             };
         } catch (error) {
-            throw InternalServerError('PostDeleteFailedError', '게시물 삭제를 실패했습니다.');
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else if (error instanceof NotFoundError) {
+                throw error;
+            } else {
+                throw new InternalServerError('게시물 삭제를 실패했습니다.');
+            }
         }
     }
 }

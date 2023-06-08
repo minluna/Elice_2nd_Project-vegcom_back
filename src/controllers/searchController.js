@@ -1,5 +1,5 @@
 import { searchService } from '../services/searchService.js';
-import { UnauthorizedError, BadRequestError } from '../../errors.js';
+import { UnauthorizedError, BadRequestError } from '../middlewares/errorMiddleware.js';
 
 class searchController {
     static async getKeywordPost(req, res, next) {
@@ -7,11 +7,11 @@ class searchController {
         const { keyword } = req.body;
 
         if (!userId) {
-            throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
         }
 
         if (!keyword) {
-            throw new BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+            throw new BadRequestError('요청값을 확인해주세요.')();
         }
 
         try {

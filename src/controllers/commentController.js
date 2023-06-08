@@ -1,5 +1,5 @@
 import { commentService } from '../services/commentService.js';
-import { UnauthorizedError, BadRequestError } from '../../errors.js';
+import { UnauthorizedError, BadRequestError } from '../middlewares/errorMiddleware.js';
 
 class commentController {
     static async create(req, res, next) {
@@ -8,11 +8,11 @@ class commentController {
         const parentId = req.body.parentId ?? 0;
 
         if (!userId) {
-            throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
         }
 
         if (!postId || !content || !parentId) {
-            throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+            throw new BadRequestError('요청값을 확인해주세요.');
         }
 
         try {
@@ -29,11 +29,11 @@ class commentController {
         const { postId, content } = req.body;
 
         if (!userId) {
-            throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
         }
 
         if (!commentId || !postId || !content) {
-            throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+            throw new BadRequestError('요청값을 확인해주세요.');
         }
 
         try {
@@ -49,11 +49,11 @@ class commentController {
         const commentId = req.params.commentId;
 
         if (!userId) {
-            throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
         }
 
         if (!commentId) {
-            throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+            throw new BadRequestError('요청값을 확인해주세요.');
         }
 
         try {
@@ -69,11 +69,11 @@ class commentController {
         const postId = req.params.postId;
 
         if (!userId) {
-            throw UnauthorizedError('NotAuthenticatedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
         }
 
         if (!postId) {
-            throw BadRequestError('BadRequestError', '요청값을 확인해주세요.');
+            throw new BadRequestError('요청값을 확인해주세요.');
         }
 
         try {
