@@ -1,5 +1,4 @@
 import { commentService } from '../services/commentService.js';
-import { UnauthorizedError, BadRequestError } from '../middlewares/errorMiddleware.js';
 
 class commentController {
     static async create(req, res, next) {

@@ -36,7 +36,8 @@ class Comment {
     // 전체 댓글 불러오기
     static async select({ postId }) {
         const query =
-            'SELECT comment.userId, \
+            'SELECT comment.id, \
+                    comment.userId, \
                     user.nickname, \
                     user_image.imageUrl, \
                     comment.content \

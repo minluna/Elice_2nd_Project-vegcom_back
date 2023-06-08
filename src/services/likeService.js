@@ -1,69 +1,108 @@
-import { Like } from '../db/in';
-import errors from '../../errors.js'; //커스텀 에러 집어넣기
-
-//모델과 서비스를 어떻게 구성할까?
-//좋아요는 한 게시물 당 한번만 가능
-//좋아요 선택시 체크가 안되어 있으면 체크하고, 이미 되어 잇으면 해지
-// 좋아요가 되어있는지 안되어있는지 확인하는 코드 필요 ---> 좋아요 테이블에서 찾아봄 (currentuserid = userid)
-// 좋아요테이블에  있으면 ---> 삭제하기
-// 좋아요가 되어 있지 않으면 ---> 생성하기 
+import { mysqlDB, User, Like } from '../db/index.js';
+import { UnauthorizedError, InternalServerError, NotFoundError } from '../middlewares/errorMiddleware.js';
 
 //수정작성 중
 class likeService {
-
-    static async togglePostLike({postId, userId}) {
+    //좋아요 여부 확인
+    static async showStatusLike({ userId, postId }) {
         try {
-            const isLiked = await Like.isLiked(postId, userId);
-            
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
+            const likeUser = await Like.isLiked({ userId, postId });
+            const likeCount = await Like.getLike({ postId });
+
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
-                message: '좋아요 여부 확인.'
+                message: '좋아요 여부 확인 및 좋아요 누적수 불러오기에 성공했습니다.',
+                likeUser,
+                likeCount: likeCount.likeCount,
             };
         } catch (error) {
-            throw new error ('좋아요 여부 확인에 실패하였습니다.')
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError('좋아요 여부 확인 및 좋아요 누적수 불러오기에 실패했습니다..');
+            }
         }
     }
 
-    static async countUp() {
-        
-        //에러처리 코드 넣기.
-        const like = await Like.addAndUpdate();
+    //좋아요 생성
+    static async create({ userId, postId }) {
+        try {
+            await mysqlDB.query('START TRANSACTION');
 
-        return like;
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
+            const likeUser = await Like.isLiked({ userId, postId });
+
+            if (likeUser === true) {
+                throw new NotFoundError('해당 게시물에는 이미 사용자의 좋아요가 있습니다.');
+            }
+
+            await Like.addLike({ userId, postId });
+
+            await mysqlDB.query('COMMIT');
+
+            return {
+                statusCode: 200,
+                message: '좋아요 목록 생성에 성공하셨습니다.',
+            };
+        } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else if (error instanceof NotFoundError) {
+                throw error;
+            } else {
+                throw new InternalServerError('좋아요 목록 생성에 실패하였습니다.');
+            }
+        }
     }
 
-    static async countDown() {
+    // 좋아요 삭제
+    static async delete({ postId, userId }) {
+        try {
+            await mysqlDB.query('START TRANSACTION');
 
-        //에러처리 코드 넣기.
-        const like = await Like.DeleteAndUpdate();
+            const user = await User.findById({ userId });
 
-        return like;
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
+            await Like.removeLike({ userId, postId });
+
+            await mysqlDB.query('COMMIT');
+
+            return {
+                statusCode: 200,
+                message: '좋아요 목록 삭제에 성공하였습니다.',
+            };
+        } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError('좋아요 목록 삭제에 실패하였습니다.');
+            }
+        }
     }
 }
 
 export { likeService };
-
-   
-
-// postService.js
-
-const PostLike = require('../models/postLike');
-
-// 현재 유저가 좋아요를 누른 상태인지 확인하고 처리
-async function togglePostLike(postId, userId) {
-  try {
-    const isLiked = await PostLike.isPostLiked(postId, userId);
-
-    if (isLiked) {
-      await PostLike.removePostLike(postId, userId);
-      await PostLike.decrementLikeCount(postId);
-    } else {
-      await PostLike.addPostLike(postId, userId);
-      await PostLike.incrementLikeCount(postId);
-    }
-  } catch (error) {
-    throw error;
-  }
-}
-
-module.exports = { togglePostLike };
