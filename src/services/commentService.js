@@ -1,4 +1,4 @@
-import { User, Comment, Post } from '../db/index.js';
+import { mysqlDB, User, Comment, Post } from '../db/index.js';
 import { UnauthorizedError, NotFoundError, InternalServerError } from '../middlewares/errorMiddleware.js';
 
 class commentService {

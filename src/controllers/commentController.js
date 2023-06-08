@@ -4,16 +4,7 @@ import { UnauthorizedError, BadRequestError } from '../middlewares/errorMiddlewa
 class commentController {
     static async create(req, res, next) {
         const userId = req.currentUserId;
-        const { postId, content } = req.body;
-        const parentId = req.body.parentId ?? 0;
-
-        if (!userId) {
-            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
-        }
-
-        if (!postId || !content || !parentId) {
-            throw new BadRequestError('요청값을 확인해주세요.');
-        }
+        const { postId, content, parentId } = req.body;
 
         try {
             const createComment = await commentService.createComment({ userId, postId, content, parentId });
@@ -28,14 +19,6 @@ class commentController {
         const commentId = req.params.commentId;
         const { postId, content } = req.body;
 
-        if (!userId) {
-            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
-        }
-
-        if (!commentId || !postId || !content) {
-            throw new BadRequestError('요청값을 확인해주세요.');
-        }
-
         try {
             const updateComment = await commentService.updateComment({ userId, postId, commentId, content });
             return res.status(updateComment.statusCode).send({ message: updateComment.message });
@@ -48,14 +31,6 @@ class commentController {
         const userId = req.currentUserId;
         const commentId = req.params.commentId;
 
-        if (!userId) {
-            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
-        }
-
-        if (!commentId) {
-            throw new BadRequestError('요청값을 확인해주세요.');
-        }
-
         try {
             const deleteComment = await commentService.deleteComment({ userId, commentId });
             return res.status(deleteComment.statusCode).send({ message: deleteComment.message });
@@ -67,14 +42,6 @@ class commentController {
     static async getComment(req, res, next) {
         const userId = req.currentUserId;
         const postId = req.params.postId;
-
-        if (!userId) {
-            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
-        }
-
-        if (!postId) {
-            throw new BadRequestError('요청값을 확인해주세요.');
-        }
 
         try {
             const getComment = await commentService.getComment({ userId, postId });
