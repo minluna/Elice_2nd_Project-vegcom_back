@@ -1,4 +1,4 @@
-import { InternalServerError, UnauthorizedError } from '../../errors.js';
+import { UnauthorizedError, InternalServerError } from './errorMiddleware.js';
 
 import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
@@ -25,11 +25,11 @@ passport.use(
 function login_required(req, res, next) {
     passport.authenticate('jwt', { session: false }, (err, userId) => {
         if (err) {
-            throw InternalServerError('InternalServerError', '서버 오류가 발생했습니다. 다시 시도해주세요.');
+            throw new InternalServerError('서버 오류가 발생했습니다. 다시 시도해주세요.');
         }
 
         if (!userId) {
-            throw UnauthorizedError('UnauthorizedError', '로그인한 유저만 사용할 수 있는 서비스입니다.');
+            throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
         }
 
         req.currentUserId = userId;

@@ -13,7 +13,7 @@ class Post {
     //2. 피드 상세페이지
     static async getPost({ postId }) {
         const query =
-            'SELECT post.id as postId, post.userId, post.content, post_image.imageUrl FROM post JOIN post_image ON post.id = post_image.postId WHERE post.id = ? and deleteAt IS NULL';
+            'SELECT post.id as postId, post.userId, post.content, post_image.imageUrl FROM post LEFT JOIN post_image ON post.id = post_image.postId WHERE post.id = ? and deleteAt IS NULL';
         const [rows] = await mysqlDB.query(query, [postId]);
 
         return rows[0];
