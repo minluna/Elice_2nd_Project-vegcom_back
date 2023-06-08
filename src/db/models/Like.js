@@ -21,8 +21,9 @@ static async getLike({ postId }) {
     
     const query = 'SELECT * FROM post_like WHERE postId = ? AND userId = ?';
     const result = await mysqlDB.query(query,[postId, userId]);
-
-    return result.length > 0;
+   
+    return result[0].length > 0 
+    
   }
   
   // 새로운 좋아요 생성

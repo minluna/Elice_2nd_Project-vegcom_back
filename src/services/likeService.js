@@ -15,11 +15,11 @@ class likeService {
         try {
             await mysqlDB.query('START TRANSACTION');
 
-            const user = await User.findById({ userId });
+            // const user = await User.findById({ userId });
 
-            if (!user) {
-                throw new UnauthorizedError('잘못된 토큰입니다.');
-            }
+            // if (!user) {
+            //     throw new UnauthorizedError('잘못된 토큰입니다.');
+            // }
 
             const likeUser = await Like.isLiked({postId, userId});
             const likeCount = await Like.getLike({postId});
@@ -50,13 +50,13 @@ class likeService {
         try {
             await mysqlDB.query('START TRANSACTION');
 
-            const user = await User.findById({ userId });
+            // const user = await User.findById({ userId });
 
-            if (!user) {
-                throw new UnauthorizedError('잘못된 토큰입니다.');
-            }
+            // if (!user) {
+            //     throw new UnauthorizedError('잘못된 토큰입니다.');
+            // }
 
-            await Like.create({postId, userId});
+            await Like.addLike({postId, userId});
         
 
             await mysqlDB.query('COMMIT');
@@ -82,14 +82,14 @@ class likeService {
         try {
             await mysqlDB.query('START TRANSACTION');
 
-            const user = await User.findById({ userId });
+            // const user = await User.findById({ userId });
 
-            if (!user) {
-                throw new UnauthorizedError('잘못된 토큰입니다.');
-            }
+            // if (!user) {
+            //     throw new UnauthorizedError('잘못된 토큰입니다.');
+            // }
 
             
-            await Like.delete({postId, userId});
+            await Like.removeLike({postId, userId});
 
             await mysqlDB.query('COMMIT');
 

@@ -8,7 +8,7 @@ import {UnauthorizedError, BadRequestError } from '../middlewares/errorMiddlewar
 class likeController {
     static async showLike (req, res, next) {
         const userId = req.currentUserId;
-        const postId = req.body;
+        const postId = req.params.postId;
         
         if (!userId) {
             throw new UnauthorizedError('로그인한 유저만 사용할 수 있는 서비스입니다.');
@@ -29,8 +29,8 @@ class likeController {
 
     static async createLike (req, res, next) {
         const userId = req.currentUserId;
-        const postId = req.body;
-        
+        const postId = req.params.postId;
+        console.log(userId)
         if (!userId) {
             throw new UnauthorizedError('로그인란 유저만 사용할 수 있는 서비스입니다.');
         }
@@ -49,15 +49,15 @@ class likeController {
 
     static async deleteLike (req, res, next) {
         const userId = req.currentUserId;
-        const postId = req.body;
+        const postId = req.params.postId;
         
-        if (!userId) {
-            throw new UnauthorizedError('로그인란 유저만 사용할 수 있는 서비스입니다.');
-        }
+        // if (!userId) {
+        //     throw new UnauthorizedError('로그인란 유저만 사용할 수 있는 서비스입니다.');
+        // }
         
-        if (!postId) {
-            throw new BadRequestError('요청값을 확인해주세요.');
-        }
+        // if (!postId) {
+        //     throw new BadRequestError('요청값을 확인해주세요.');
+        // }
         
         try {
             const like = await likeService.delete({ userId, postId });
