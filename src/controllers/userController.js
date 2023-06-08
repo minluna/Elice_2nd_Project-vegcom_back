@@ -25,9 +25,9 @@ class userAuthController {
     }
 
     static async isLogin(req, res, next) {
-        const userId = req.currentUserId;
-
         try {
+            const userId = req.currentUserId;
+
             const checkUser = await userAuthService.loginCheck({ userId });
             return res.status(checkUser.statusCode).send({ message: checkUser.message });
         } catch (error) {
@@ -36,9 +36,9 @@ class userAuthController {
     }
 
     static async getPoint(req, res, next) {
-        const userId = req.currentUserId;
-
         try {
+            const userId = req.currentUserId;
+
             const getPoint = await userAuthService.getUserPoint({ userId });
             return res.status(getPoint.statusCode).send({ message: getPoint.message, userPoint: getPoint.userPoint });
         } catch (error) {
@@ -47,9 +47,9 @@ class userAuthController {
     }
 
     static async getCount(req, res, next) {
-        const userId = req.currentUserId;
-
         try {
+            const userId = req.currentUserId;
+
             const getCount = await userAuthService.getUserCount({ userId });
             return res.status(getCount.statusCode).send({ message: getCount.message, userCount: getCount.userCount });
         } catch (error) {

@@ -3,10 +3,10 @@ import { UnauthorizedError, BadRequestError } from '../middlewares/errorMiddlewa
 
 class searchController {
     static async getKeywordPost(req, res, next) {
-        const userId = req.currentUserId;
-        const { keyword } = req.body;
-
         try {
+            const userId = req.currentUserId;
+            const { keyword } = req.body;
+
             const keywordPost = await searchService.getPost({ userId, keyword });
             return res.status(keywordPost.statusCode).send({ message: keywordPost.message, searchPost: keywordPost.searchPost });
         } catch (error) {
