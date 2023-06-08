@@ -1,14 +1,20 @@
 import { Router } from 'express';
+
 import { login_required } from '../middlewares/login_required.js';
+import { loginValidationRules, login_validate } from '../middlewares/login_validate.js';
+import { RegisterValidationRules, register_validate } from '../middlewares/register_validate.js';
+import { params_validate } from '../middlewares/params_validate.js';
+import { SetUserValidationRules, setUser_validate } from '../middlewares/setUser_validate.js';
+
 import { userAuthController } from '../controllers/userController.js';
 
 const userAuthRouter = Router();
 
 // 회원가입
-userAuthRouter.post('/register', userAuthController.register);
+userAuthRouter.post('/register', RegisterValidationRules, register_validate, userAuthController.register);
 
 // 로그인
-userAuthRouter.post('/login', userAuthController.login);
+userAuthRouter.post('/login', loginValidationRules, login_validate, userAuthController.login);
 
 // 로그인 검증
 userAuthRouter.get('/isLogin', login_required, userAuthController.isLogin);
@@ -20,12 +26,12 @@ userAuthRouter.get('/point', login_required, userAuthController.getPoint);
 userAuthRouter.get('/userCount', login_required, userAuthController.getCount);
 
 // 유저 정보 불러오기
-userAuthRouter.get('/:userId', login_required, userAuthController.getInfo);
+userAuthRouter.get('/:userId', login_required, params_validate, userAuthController.getInfo);
 
 // 유저 정보 수정하기(별명, 설명)
-userAuthRouter.put('/:userId', login_required, userAuthController.setInfo);
+userAuthRouter.put('/:userId', login_required, SetUserValidationRules, setUser_validate, userAuthController.setInfo);
 
 // 유저 정보 삭제하기
-userAuthRouter.delete('/:userId', login_required, userAuthController.delInfo);
+userAuthRouter.delete('/:userId', login_required, params_validate, userAuthController.delInfo);
 
 export { userAuthRouter };
