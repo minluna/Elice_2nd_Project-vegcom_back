@@ -33,9 +33,9 @@ userAuthRouter.get('/:userId', login_required, userParams_validate, userAuthCont
 userAuthRouter.put(
     '/:userId',
     login_required,
+    upload.single('image'),
     SetUserValidationRules,
     setUser_validate,
-    upload.single('image'),
     userAuthController.setInfo,
 );
 

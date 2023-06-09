@@ -12,7 +12,7 @@ import { s3 } from '../aws.config.js';
 
 class userAuthService {
     // 유저 생성
-    static async createUser({ email, password, nickname }) {
+    static async createUser({ email, password, nickname, imageUrl }) {
         try {
             await mysqlDB.query('START TRANSACTION');
 
@@ -30,6 +30,7 @@ class userAuthService {
                 email,
                 password: hashedPassword,
                 nickname,
+                imageUrl,
             });
 
             await mysqlDB.query('COMMIT');
@@ -102,6 +103,9 @@ class userAuthService {
                     statusCode: 200,
                     message: '정상적인 유저입니다.',
                     userId: user.id,
+                    email: user.email,
+                    nickname: user.nickname,
+                    userImage: user.userImage,
                 };
             }
         } catch (error) {
@@ -201,24 +205,8 @@ class userAuthService {
 
             // toUpdate -> nickName, description
             for (const [fieldToUpdate, newValue] of Object.entries(toUpdate)) {
-                await User.update({ userId, fieldToUpdate, newValue });
+                await User.update({ userId, fieldToUpdate, newValue, imageUrl });
             }
-
-            const params = {
-                Bucket: '7team-bucket',
-                Key: 'image.jpg',
-                Body: imageUrl,
-            };
-
-            s3.putObject(params, (err, data) => {
-                if (err) {
-                    throw new InternalServerError('이미지 저장에 실패했습니다.');
-                    // 업로드 실패 시 처리할 코드 작성
-                } else {
-                    console.log('Image uploaded successfully');
-                    // 업로드 성공 시 처리할 코드 작성
-                }
-            });
 
             await mysqlDB.query('COMMIT');
 
