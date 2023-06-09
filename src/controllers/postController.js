@@ -71,6 +71,19 @@ class postController {
             next(error);
         }
     }
+
+    // 6. 피드 개수와 피드 작성자의 수
+    static async getCount(req, res, next) {
+        try {
+            const userId = req.currentUserId;
+
+            const post = await postService.getCountPostUser({ userId });
+
+            res.status(post.statusCode).send({ message: post.message, postCount: post.postCount, userCount: post.userCount });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export { postController };

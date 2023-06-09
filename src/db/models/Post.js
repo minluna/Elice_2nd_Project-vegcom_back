@@ -52,6 +52,18 @@ class Post {
 
         return rows[0];
     }
+
+    // 7. 피드 개수와 피드 작성자의 수
+    static async getCount() {
+        const query =
+            'SELECT COUNT(*) AS postCount, \
+                    COUNT(DISTINCT userId) AS userCount \
+            FROM post \
+            WHERE DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE()';
+        const [rows] = await mysqlDB.query(query);
+
+        return rows[0];
+    }
 }
 
 export { Post };

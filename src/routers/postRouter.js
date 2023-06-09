@@ -12,6 +12,9 @@ const postRouter = Router();
 // 1. 전체 피드 시간순
 postRouter.get('/list', postController.getAllposts);
 
+// 6. 피드 개수와 피드 작성자의 수
+postRouter.get('/count', postController.getCount);
+
 // 2. 피드 상세페이지
 postRouter.get('/:postId', postParams_validate, postController.getPost);
 
