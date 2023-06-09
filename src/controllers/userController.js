@@ -28,7 +28,7 @@ class userAuthController {
             const userId = req.currentUserId;
 
             const checkUser = await userAuthService.loginCheck({ userId });
-            return res.status(checkUser.statusCode).send({ message: checkUser.message });
+            return res.status(checkUser.statusCode).send({ message: checkUser.message, userId: checkUser.userId });
         } catch (error) {
             next(error);
         }
@@ -71,10 +71,11 @@ class userAuthController {
         try {
             const userId = req.params.userId;
             const { nickname, description } = req.body;
+            const imageUrl = req.file.location;
 
             const toUpdate = { nickname, description };
 
-            const setInfo = await userAuthService.setUserInfo({ userId, toUpdate });
+            const setInfo = await userAuthService.setUserInfo({ userId, toUpdate, imageUrl });
             return res.status(setInfo.statusCode).send({ message: setInfo.message });
         } catch (error) {
             next(error);

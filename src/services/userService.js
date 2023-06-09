@@ -6,9 +6,9 @@ import {
     NotFoundError,
     InternalServerError,
 } from '../middlewares/errorMiddleware.js';
-import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { s3 } from '../aws.config.js';
 
 class userAuthService {
     // 유저 생성
@@ -101,6 +101,7 @@ class userAuthService {
                 return {
                     statusCode: 200,
                     message: '정상적인 유저입니다.',
+                    userId: user.id,
                 };
             }
         } catch (error) {
@@ -188,7 +189,7 @@ class userAuthService {
     }
 
     // 유저 정보 수정(별명, 설명)
-    static async setUserInfo({ userId, toUpdate }) {
+    static async setUserInfo({ userId, toUpdate, imageUrl }) {
         try {
             await mysqlDB.query('START TRANSACTION');
 
@@ -202,6 +203,22 @@ class userAuthService {
             for (const [fieldToUpdate, newValue] of Object.entries(toUpdate)) {
                 await User.update({ userId, fieldToUpdate, newValue });
             }
+
+            const params = {
+                Bucket: '7team-bucket',
+                Key: 'image.jpg',
+                Body: imageUrl,
+            };
+
+            s3.putObject(params, (err, data) => {
+                if (err) {
+                    throw new InternalServerError('이미지 저장에 실패했습니다.');
+                    // 업로드 실패 시 처리할 코드 작성
+                } else {
+                    console.log('Image uploaded successfully');
+                    // 업로드 성공 시 처리할 코드 작성
+                }
+            });
 
             await mysqlDB.query('COMMIT');
 
