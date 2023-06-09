@@ -31,7 +31,8 @@ class postController {
         try {
             const userId = req.currentUserId;
 
-            const { content, imageUrl } = req.body;
+            const { content } = req.body;
+            const imageUrl = req.file.key;
 
             const post = await postService.createPost({ userId, content, imageUrl });
             res.status(post.statusCode).send({ message: post.message });

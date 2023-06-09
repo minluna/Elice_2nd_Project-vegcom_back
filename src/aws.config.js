@@ -19,7 +19,10 @@ const upload = multer({
             cb(null, { fieldName: file.fieldname });
         },
         key: function (req, file, cb) {
-            cb(null, Date.now().toString()); // 업로드할 파일의 키 설정 (현재 시간 기준)
+            const date = new Date().toISOString().replace(/:/g, '-');
+            const fileExtension = file.originalname.split('.').pop();
+            const filename = `image-${date}.${fileExtension}`;
+            cb(null, filename);
         },
     }),
 });

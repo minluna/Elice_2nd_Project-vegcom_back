@@ -1,5 +1,7 @@
 import { mysqlDB, User, Post } from '../db/index.js';
 import { UnauthorizedError, NotFoundError, InternalServerError } from '../middlewares/errorMiddleware.js';
+import { s3 } from '../aws.config.js';
+import { encodeFilename } from '../utils/util.js';
 
 class postService {
     //1. 전체 피드 시간순
