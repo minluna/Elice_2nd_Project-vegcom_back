@@ -14,8 +14,7 @@ class likeService {
                 throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
             }
 
-            const likeUser = await Like.isLiked({ userId, postId });
-            const likeCount = await Like.getLike({ postId });
+            const [likeUser, likeCount] = await Promise.all([Like.isLiked({ userId, postId }), Like.getLike({ postId })]);
 
             await mysqlDB.query('COMMIT');
 
