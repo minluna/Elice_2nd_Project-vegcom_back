@@ -17,7 +17,9 @@ class userAuthController {
             const { email, password } = req.body;
 
             const loginUser = await userAuthService.getUser({ email, password });
-            return res.status(loginUser.statusCode).send({ message: loginUser.message, token: loginUser.token });
+            return res
+                .status(loginUser.statusCode)
+                .send({ message: loginUser.message, token: loginUser.token, userId: loginUser.userId });
         } catch (error) {
             next(error);
         }

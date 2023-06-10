@@ -83,6 +83,7 @@ class userAuthService {
                 statusCode: 200,
                 message: '로그인에 성공했습니다.',
                 token,
+                userId: user.id,
             };
         } catch (error) {
             await mysqlDB.query('ROLLBACK');
