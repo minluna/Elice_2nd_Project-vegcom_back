@@ -1,4 +1,4 @@
-import { User, Search } from '../db/index.js';
+import { mysqlDB, User, Search } from '../db/index.js';
 import { UnauthorizedError, InternalServerError } from '../middlewares/errorMiddleware.js';
 
 class searchService {

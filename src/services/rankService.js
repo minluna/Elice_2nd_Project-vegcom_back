@@ -1,4 +1,4 @@
-import { User, Rank } from '../db/index.js';
+import { mysqlDB, User, Rank } from '../db/index.js';
 import { UnauthorizedError, InternalServerError } from '../middlewares/errorMiddleware.js';
 
 class rankService {
