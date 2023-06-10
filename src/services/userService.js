@@ -6,13 +6,13 @@ import {
     NotFoundError,
     InternalServerError,
 } from '../middlewares/errorMiddleware.js';
-import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { s3 } from '../aws.config.js';
 
 class userAuthService {
     // 유저 생성
-    static async createUser({ email, password, nickname }) {
+    static async createUser({ email, password, nickname, imageUrl }) {
         try {
             await mysqlDB.query('START TRANSACTION');
 
@@ -30,6 +30,7 @@ class userAuthService {
                 email,
                 password: hashedPassword,
                 nickname,
+                imageUrl,
             });
 
             await mysqlDB.query('COMMIT');
@@ -101,6 +102,10 @@ class userAuthService {
                 return {
                     statusCode: 200,
                     message: '정상적인 유저입니다.',
+                    userId: user.id,
+                    email: user.email,
+                    nickname: user.nickname,
+                    userImage: user.userImage,
                 };
             }
         } catch (error) {
@@ -188,7 +193,7 @@ class userAuthService {
     }
 
     // 유저 정보 수정(별명, 설명)
-    static async setUserInfo({ userId, toUpdate }) {
+    static async setUserInfo({ userId, toUpdate, imageUrl }) {
         try {
             await mysqlDB.query('START TRANSACTION');
 
@@ -200,7 +205,7 @@ class userAuthService {
 
             // toUpdate -> nickName, description
             for (const [fieldToUpdate, newValue] of Object.entries(toUpdate)) {
-                await User.update({ userId, fieldToUpdate, newValue });
+                await User.update({ userId, fieldToUpdate, newValue, imageUrl });
             }
 
             await mysqlDB.query('COMMIT');

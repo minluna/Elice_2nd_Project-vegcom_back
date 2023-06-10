@@ -3,9 +3,9 @@ import { userAuthService } from '../services/userService.js';
 class userAuthController {
     static async register(req, res, next) {
         try {
-            const { email, password, nickname } = req.body;
+            const { email, password, nickname, imageUrl } = req.body;
 
-            const createUser = await userAuthService.createUser({ email, password, nickname });
+            const createUser = await userAuthService.createUser({ email, password, nickname, imageUrl });
             return res.status(createUser.statusCode).send(createUser.message);
         } catch (error) {
             next(error);
@@ -28,7 +28,13 @@ class userAuthController {
             const userId = req.currentUserId;
 
             const checkUser = await userAuthService.loginCheck({ userId });
-            return res.status(checkUser.statusCode).send({ message: checkUser.message });
+            return res.status(checkUser.statusCode).send({
+                message: checkUser.message,
+                userId: checkUser.userId,
+                email: checkUser.email,
+                nickname: checkUser.nickname,
+                userImage: checkUser.userImage,
+            });
         } catch (error) {
             next(error);
         }
@@ -71,10 +77,11 @@ class userAuthController {
         try {
             const userId = req.params.userId;
             const { nickname, description } = req.body;
+            const imageUrl = req.file.key;
 
             const toUpdate = { nickname, description };
 
-            const setInfo = await userAuthService.setUserInfo({ userId, toUpdate });
+            const setInfo = await userAuthService.setUserInfo({ userId, toUpdate, imageUrl });
             return res.status(setInfo.statusCode).send({ message: setInfo.message });
         } catch (error) {
             next(error);

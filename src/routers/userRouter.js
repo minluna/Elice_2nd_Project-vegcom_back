@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { userAuthController } from '../controllers/userController.js';
 
 import { login_required } from '../middlewares/login_required.js';
 import { loginValidationRules, login_validate } from '../middlewares/login_validate.js';
@@ -6,7 +7,7 @@ import { RegisterValidationRules, register_validate } from '../middlewares/regis
 import { userParams_validate } from '../middlewares/userParams_validate.js';
 import { SetUserValidationRules, setUser_validate } from '../middlewares/setUser_validate.js';
 
-import { userAuthController } from '../controllers/userController.js';
+import { upload } from '../aws.config.js';
 
 const userAuthRouter = Router();
 
@@ -29,7 +30,14 @@ userAuthRouter.get('/userCount', login_required, userAuthController.getCount);
 userAuthRouter.get('/:userId', login_required, userParams_validate, userAuthController.getInfo);
 
 // 유저 정보 수정하기(별명, 설명)
-userAuthRouter.put('/:userId', login_required, SetUserValidationRules, setUser_validate, userAuthController.setInfo);
+userAuthRouter.put(
+    '/:userId',
+    login_required,
+    upload.single('image'),
+    SetUserValidationRules,
+    setUser_validate,
+    userAuthController.setInfo,
+);
 
 // 유저 정보 삭제하기
 userAuthRouter.delete('/:userId', login_required, userParams_validate, userAuthController.delInfo);

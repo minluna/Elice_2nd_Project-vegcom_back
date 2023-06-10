@@ -170,6 +170,38 @@ class postService {
             }
         }
     }
+
+    // 6. 피드 개수와 피드 작성자의 수
+    static async getCountPostUser({ userId }) {
+        try {
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
+            const count = await Post.getCount();
+
+            await mysqlDB.query('COMMIT');
+
+            return {
+                statusCode: 200,
+                message: '피드 수와 피드를 작성한 유저 수 불러오기에 성공했습니다.',
+                postCount: count.postCount,
+                userCount: count.userCount,
+            };
+        } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError('피드 수와 피드를 작성한 유저 수 불러오기에 성공했습니다.');
+            }
+        }
+    }
 }
 
 export { postService };
