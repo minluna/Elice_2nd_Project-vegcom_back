@@ -11,6 +11,9 @@ class User {
 
         const query3 = 'INSERT INTO user_image (userId, imageUrl) VALUES (?, ?)';
         await mysqlDB.query(query3, [userId[0][0].id, imageUrl]);
+
+        const query4 = 'INSERT INTO point (userId, currentPoint, accuPoint) VALUES (?, 0, 0)';
+        await mysqlDB.query(query4, [userId[0][0].id]);
     }
 
     // 이메일을 이용하여 유저 검색
