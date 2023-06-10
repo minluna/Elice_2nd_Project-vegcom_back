@@ -8,12 +8,15 @@ class Post {
                     post.userId, \
                     user.nickname, \
                     post.content, \
-                    post_image.imageUrl \
+                    post_image.imageUrl, \
+                    user_image.imageUrl as userImage \
             FROM post \
             LEFT JOIN post_image \
             ON post.id = post_image.postId \
             LEFT JOIN user \
             ON post.userId = user.id \
+            LEFT JOIN user_image \
+            ON post.userId = user_image.userId \
             WHERE post.deleteAt is NULL AND user.deleteAt is NULL \
             ORDER BY post.createAt DESC';
         const [rows] = await mysqlDB.query(query);
@@ -28,13 +31,16 @@ class Post {
                     post.userId, \
                     user.nickname, \
                     post.content, \
-                    post_image.imageUrl \
+                    post_image.imageUrl, \
+                    user_image.imageUrl as userImage \
             FROM post \
             LEFT JOIN post_image \
             ON post.id = post_image.postId \
             LEFT JOIN user \
             ON post.userId = user.id \
-            WHERE post.id = 4 AND post.deleteAt is NULL AND user.deleteAt is NULL;';
+            LEFT JOIN user_image \
+            ON post.userId = user_image.userId \
+            WHERE post.id = ? AND post.deleteAt is NULL AND user.deleteAt is NULL;';
         const [rows] = await mysqlDB.query(query, [postId]);
 
         return rows[0];

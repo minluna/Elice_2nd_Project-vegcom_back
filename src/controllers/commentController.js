@@ -44,7 +44,7 @@ class commentController {
             const postId = req.params.postId;
 
             const getComment = await commentService.getComment({ userId, postId });
-            return res.status(getComment.statusCode).send({ message: getComment.message, CommentList: getComment.CommentList });
+            return res.status(getComment.statusCode).send({ message: getComment.message, commentList: getComment.CommentList });
         } catch (error) {
             next(error);
         }
