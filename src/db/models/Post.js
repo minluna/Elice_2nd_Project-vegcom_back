@@ -49,10 +49,16 @@ class Post {
     //3. 피드 작성하기
     static async create({ userId, content, imageUrl }) {
         const query1 = 'INSERT INTO post (userId, content) VALUES (?, ?)';
-        const query2 = 'INSERT INTO post_image (postId, imageUrl) VALUES (LAST_INSERT_ID(), ?)';
-
         await mysqlDB.query(query1, [userId, content]);
+
+        const query2 = 'INSERT INTO post_image (postId, imageUrl) VALUES (LAST_INSERT_ID(), ?)';
         await mysqlDB.query(query2, [imageUrl]);
+
+        const query3 =
+            'UPDATE point \
+            SET currentPoint = currentPoint + 100, accuPoint = accuPoint + 100 \
+            WHERE userId = 31 AND 3 > (select count(*) from post where userId = 31 and DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE())';
+        await mysqlDB.query(query3, [userId]);
     }
 
     //4. 피드 수정하기(포스트와 이미지를 나눠서 작성)
