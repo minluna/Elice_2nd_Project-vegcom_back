@@ -9,7 +9,8 @@ class Post {
                     user.nickname, \
                     post.content, \
                     post_image.imageUrl, \
-                    user_image.imageUrl as userImage \
+                    user_image.imageUrl as userImage, \
+                    post.createAt \
             FROM post \
             LEFT JOIN post_image \
             ON post.id = post_image.postId \
@@ -32,7 +33,8 @@ class Post {
                     user.nickname, \
                     post.content, \
                     post_image.imageUrl, \
-                    user_image.imageUrl as userImage \
+                    user_image.imageUrl as userImage, \
+                    post.createAt \
             FROM post \
             LEFT JOIN post_image \
             ON post.id = post_image.postId \
