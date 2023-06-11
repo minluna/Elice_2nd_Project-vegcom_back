@@ -1,4 +1,5 @@
 import { commentService } from '../services/commentService.js';
+import { statusCode } from '../utils/statusCode.js';
 
 class commentController {
     static async create(req, res, next) {
@@ -7,7 +8,9 @@ class commentController {
             const { postId, content, parentId } = req.body;
 
             const createComment = await commentService.createComment({ userId, postId, content, parentId });
-            return res.status(createComment.statusCode).send({ message: createComment.message });
+
+            statusCode.setResponseCode201(res);
+            return res.send({ message: createComment.message });
         } catch (error) {
             next(error);
         }
@@ -20,7 +23,9 @@ class commentController {
             const { postId, content } = req.body;
 
             const updateComment = await commentService.updateComment({ userId, postId, commentId, content });
-            return res.status(updateComment.statusCode).send({ message: updateComment.message });
+
+            statusCode.setResponseCode200(res);
+            return res.send({ message: updateComment.message });
         } catch (error) {
             next(error);
         }
@@ -32,7 +37,9 @@ class commentController {
             const commentId = req.params.commentId;
 
             const deleteComment = await commentService.deleteComment({ userId, commentId });
-            return res.status(deleteComment.statusCode).send({ message: deleteComment.message });
+
+            statusCode.setResponseCode200(res);
+            return res.send({ message: deleteComment.message });
         } catch (error) {
             next(error);
         }
@@ -44,7 +51,9 @@ class commentController {
             const postId = req.params.postId;
 
             const getComment = await commentService.getComment({ userId, postId });
-            return res.status(getComment.statusCode).send({ message: getComment.message, commentList: getComment.CommentList });
+
+            statusCode.setResponseCode200(res);
+            return res.send({ message: getComment.message, commentList: getComment.CommentList });
         } catch (error) {
             next(error);
         }
