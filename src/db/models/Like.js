@@ -3,7 +3,7 @@ import { mysqlDB } from '../index.js';
 class Like {
     // 해당 포스트 좋아요 수 가져오기
     static async getLike({ postId }) {
-        const getPostLikeCount = 'SELECT COUNT(*) AS likeCount FROM post_like WHERE postId = ?';
+        const getPostLikeCount = 'SELECT COUNT(id) AS likeCount FROM post_like WHERE postId = ?';
         const [rows] = await mysqlDB.query(getPostLikeCount, [postId]);
 
         return rows[0];
