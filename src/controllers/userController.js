@@ -22,7 +22,7 @@ class userAuthController {
             const loginUser = await userAuthService.getUser({ email, password });
 
             statusCode.setResponseCode200(res);
-            return res.send({ message: loginUser.message, token: loginUser.token });
+            return res.send({ message: loginUser.message, token: loginUser.token, userId: loginUser.userId });
         } catch (error) {
             next(error);
         }
