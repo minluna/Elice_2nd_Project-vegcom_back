@@ -54,7 +54,7 @@ class User {
 
     // 전체 유저 수 불러오기
     static async getCount() {
-        const getUserCount = 'SELECT COUNT(*) AS userCount FROM user WHERE deleteAt is null';
+        const getUserCount = 'SELECT COUNT(id) AS userCount FROM user WHERE deleteAt is null';
         const [rows] = await mysqlDB.query(getUserCount);
 
         return rows[0];

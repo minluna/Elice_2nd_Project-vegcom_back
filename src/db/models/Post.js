@@ -59,7 +59,7 @@ class Post {
         const grantPoint =
             'UPDATE point \
             SET currentPoint = currentPoint + 100, accuPoint = accuPoint + 100 \
-            WHERE userId = 31 AND 3 > (select count(*) from post where userId = 31 and DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE())';
+            WHERE userId = 31 AND 3 > (select count(id) from post where userId = 31 and DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE())';
         await mysqlDB.query(grantPoint, [userId]);
     }
 
@@ -91,7 +91,7 @@ class Post {
     // 7. 피드 개수와 피드 작성자의 수
     static async getCount() {
         const getPostCountAndPostUserCount =
-            'SELECT COUNT(*) AS postCount, \
+            'SELECT COUNT(id) AS postCount, \
                     COUNT(DISTINCT userId) AS userCount \
             FROM post \
             WHERE DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE()';
