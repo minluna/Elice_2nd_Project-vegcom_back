@@ -17,7 +17,6 @@ class commentService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '댓글 추가하기에 성공했습니다.',
             };
         } catch (error) {
@@ -52,7 +51,6 @@ class commentService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '댓글 수정하기에 성공하셨습니다.',
             };
         } catch (error) {
@@ -89,7 +87,6 @@ class commentService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '댓글 삭제하기에 성공하셨습니다.',
             };
         } catch (error) {
@@ -126,7 +123,6 @@ class commentService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '게시글 총 댓글 불러오기에 성공하셨습니다.',
                 CommentList,
             };

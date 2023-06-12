@@ -3,7 +3,7 @@ import { mysqlDB } from '../index.js';
 class Search {
     // keyword 검색하기
     static async select({ keyword }) {
-        const query = `SELECT post.id as postId, \
+        const getPostByKeyword = `SELECT post.id as postId, \
                                 post.userId as userId, \
                                 post.content, \
                                 post_image.imageUrl
@@ -11,7 +11,7 @@ class Search {
                         JOIN post_image \
                         ON post.id = post_image.postId \
                         WHERE content LIKE CONCAT('%', ?, '%') AND post.deleteAt is null`;
-        const [rows] = await mysqlDB.query(query, [keyword]);
+        const [rows] = await mysqlDB.query(getPostByKeyword, [keyword]);
 
         return rows;
     }

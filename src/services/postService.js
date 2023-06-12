@@ -18,7 +18,6 @@ class postService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '게시물 전체 조회를 성공했습니다.',
                 posts,
             };
@@ -49,7 +48,6 @@ class postService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '게시물 상세 조회를 성공했습니다.',
                 post,
             };
@@ -84,7 +82,6 @@ class postService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 201,
                 message: '게시물 작성을 성공했습니다.',
             };
         } catch (error) {
@@ -129,7 +126,6 @@ class postService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '게시물 수정을 성공했습니다.',
             };
         } catch (error) {
@@ -167,7 +163,6 @@ class postService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '게시물 삭제를 성공했습니다.',
             };
         } catch (error) {
@@ -199,7 +194,6 @@ class postService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '피드 수와 피드를 작성한 유저 수 불러오기에 성공했습니다.',
                 postCount: count.postCount,
                 userCount: count.userCount,

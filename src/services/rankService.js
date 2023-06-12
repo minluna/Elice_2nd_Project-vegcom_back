@@ -17,7 +17,6 @@ class rankService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '전체 랭킹 리스트 불러오기에 성공했습니다.',
                 rankList,
             };
