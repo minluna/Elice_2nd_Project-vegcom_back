@@ -31,7 +31,8 @@ class postController {
         try {
             const userId = req.currentUserId;
 
-            const { content, imageUrl } = req.body;
+            const { content } = req.body;
+            const imageUrl = req.file.key;
 
             const post = await postService.createPost({ userId, content, imageUrl });
             res.status(post.statusCode).send({ message: post.message });
@@ -66,6 +67,19 @@ class postController {
             const post = await postService.delPost({ userId, postId });
 
             res.status(post.statusCode).send({ message: post.message });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // 6. 피드 개수와 피드 작성자의 수
+    static async getCount(req, res, next) {
+        try {
+            const userId = req.currentUserId;
+
+            const post = await postService.getCountPostUser({ userId });
+
+            res.status(post.statusCode).send({ message: post.message, postCount: post.postCount, userCount: post.userCount });
         } catch (error) {
             next(error);
         }

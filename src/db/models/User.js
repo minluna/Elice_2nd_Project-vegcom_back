@@ -2,11 +2,18 @@ import { mysqlDB } from '../index.js';
 
 class User {
     // 새로운 유저 생성
-    static async create({ email, password, nickname }) {
-        const query = 'INSERT INTO user (email, password, nickname, flag) VALUES (?, ?, ?, "일반")';
-        const [rows] = await mysqlDB.query(query, [email, password, nickname]);
+    static async create({ email, password, nickname, imageUrl }) {
+        const query1 = 'INSERT INTO user (email, password, nickname, flag) VALUES (?, ?, ?, "일반")';
+        await mysqlDB.query(query1, [email, password, nickname]);
 
-        return rows;
+        const query2 = 'SELECT id FROM user WHERE email = ? AND nickname = ?';
+        const userId = await mysqlDB.query(query2, [email, nickname]);
+
+        const query3 = 'INSERT INTO user_image (userId, imageUrl) VALUES (?, ?)';
+        await mysqlDB.query(query3, [userId[0][0].id, imageUrl]);
+
+        const query4 = 'INSERT INTO point (userId, currentPoint, accuPoint) VALUES (?, 0, 0)';
+        await mysqlDB.query(query4, [userId[0][0].id]);
     }
 
     // 이메일을 이용하여 유저 검색
@@ -35,13 +42,10 @@ class User {
         const query =
             'SELECT user.id, \
                     user.nickname, \
-                    user_image.imageUrl, \
                     point.accuPoint \
             FROM user \
-            RIGHT JOIN point \
+            LEFT JOIN point \
             ON user.id = point.userId \
-            LEFT JOIN user_image \
-            ON user.id = user_image.userId \
             WHERE user.id = ? AND user.deleteAt is null';
         const [rows] = await mysqlDB.query(query, [userId]);
 
@@ -57,11 +61,11 @@ class User {
     }
 
     // 유저 정보 수정(내용, 별명)
-    static async update({ userId, fieldToUpdate, newValue }) {
-        const query = `UPDATE user SET ${fieldToUpdate} = ? WHERE id = ?`;
-        const [rows] = await mysqlDB.query(query, [newValue, userId]);
-
-        return rows;
+    static async update({ userId, fieldToUpdate, newValue, imageUrl }) {
+        const query1 = `UPDATE user SET ${fieldToUpdate} = ? WHERE id = ?`;
+        await mysqlDB.query(query1, [newValue, userId]);
+        const query2 = 'UPDATE user_image SET imageUrl = ? WHERE userId = ?';
+        await mysqlDB.query(query2, [imageUrl, userId]);
     }
 
     // 유저 정보 삭제

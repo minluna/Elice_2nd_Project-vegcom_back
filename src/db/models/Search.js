@@ -12,7 +12,7 @@ class Search {
                         ON post.id = post_image.postId \
                         WHERE content LIKE CONCAT('%', ?, '%') AND post.deleteAt is null`;
         const [rows] = await mysqlDB.query(query, [keyword]);
-        console.log(rows);
+
         return rows;
     }
 }

@@ -9,6 +9,7 @@ const RegisterValidationRules = [
         .isLength({ min: 10 })
         .withMessage('비밀번호는 최소 10글자이상 입력하세요.'),
     body('nickname').notEmpty().withMessage('이름을 입력하세요.'),
+    body('imageUrl').notEmpty().withMessage('imageUrl을 확인하세요.'),
 ];
 
 const register_validate = (req, res, next) => {

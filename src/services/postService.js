@@ -5,6 +5,8 @@ class postService {
     //1. 전체 피드 시간순
     static async getAllPosts({ userId }) {
         try {
+            await mysqlDB.query('START TRANSACTION');
+
             const user = await User.findById({ userId });
 
             if (!user) {
@@ -12,6 +14,8 @@ class postService {
             }
 
             const posts = await Post.getAllPosts();
+
+            await mysqlDB.query('COMMIT');
 
             return {
                 statusCode: 200,
@@ -26,6 +30,8 @@ class postService {
     //2. 피드 상세페이지
     static async getPost({ userId, postId }) {
         try {
+            await mysqlDB.query('START TRANSACTION');
+
             const user = await User.findById({ userId });
 
             if (!user) {
@@ -39,6 +45,8 @@ class postService {
             }
 
             const post = await Post.getPost({ postId });
+
+            await mysqlDB.query('COMMIT');
 
             return {
                 statusCode: 200,
@@ -80,6 +88,8 @@ class postService {
                 message: '게시물 작성을 성공했습니다.',
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
             if (error instanceof UnauthorizedError) {
                 throw error;
             } else {
@@ -123,6 +133,8 @@ class postService {
                 message: '게시물 수정을 성공했습니다.',
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
             if (error instanceof UnauthorizedError) {
                 throw error;
             } else if (error instanceof NotFoundError) {
@@ -167,6 +179,38 @@ class postService {
                 throw error;
             } else {
                 throw new InternalServerError('게시물 삭제를 실패했습니다.');
+            }
+        }
+    }
+
+    // 6. 피드 개수와 피드 작성자의 수
+    static async getCountPostUser({ userId }) {
+        try {
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
+            const count = await Post.getCount();
+
+            await mysqlDB.query('COMMIT');
+
+            return {
+                statusCode: 200,
+                message: '피드 수와 피드를 작성한 유저 수 불러오기에 성공했습니다.',
+                postCount: count.postCount,
+                userCount: count.userCount,
+            };
+        } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError('피드 수와 피드를 작성한 유저 수 불러오기에 성공했습니다.');
             }
         }
     }

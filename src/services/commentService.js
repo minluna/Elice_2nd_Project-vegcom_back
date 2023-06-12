@@ -107,6 +107,8 @@ class commentService {
 
     static async getComment({ userId, postId }) {
         try {
+            await mysqlDB.query('START TRANSACTION');
+
             const user = await User.findById({ userId });
 
             if (!user) {
@@ -121,12 +123,16 @@ class commentService {
 
             const CommentList = await Comment.select({ postId });
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '게시글 총 댓글 불러오기에 성공하셨습니다.',
                 CommentList,
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
             if (error instanceof UnauthorizedError) {
                 throw error;
             } else if (error instanceof NotFoundError) {

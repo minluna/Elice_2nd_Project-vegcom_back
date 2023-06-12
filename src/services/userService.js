@@ -6,13 +6,13 @@ import {
     NotFoundError,
     InternalServerError,
 } from '../middlewares/errorMiddleware.js';
-import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { s3 } from '../aws.config.js';
 
 class userAuthService {
     // 유저 생성
-    static async createUser({ email, password, nickname }) {
+    static async createUser({ email, password, nickname, imageUrl }) {
         try {
             await mysqlDB.query('START TRANSACTION');
 
@@ -30,6 +30,7 @@ class userAuthService {
                 email,
                 password: hashedPassword,
                 nickname,
+                imageUrl,
             });
 
             await mysqlDB.query('COMMIT');
@@ -52,6 +53,8 @@ class userAuthService {
     // 로그인 검사
     static async getUser({ email, password }) {
         try {
+            await mysqlDB.query('START TRANSACTION');
+
             const user = await User.findByEmail({ email });
 
             // 이메일 검증
@@ -74,12 +77,17 @@ class userAuthService {
                 secretKey,
             );
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '로그인에 성공했습니다.',
                 token,
+                userId: user.id,
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
             if (error instanceof NotFoundError) {
                 throw error;
             } else if (error instanceof UnauthorizedError) {
@@ -93,17 +101,27 @@ class userAuthService {
     // ID로 유저 검색(로그인 체크)
     static async loginCheck({ userId }) {
         try {
+            await mysqlDB.query('START TRANSACTION');
+
             const user = await User.findById({ userId });
 
             if (!user) {
                 throw new NotFoundError('요청한 사용자의 정보를 찾을 수 없습니다.');
             } else {
+                await mysqlDB.query('COMMIT');
+
                 return {
                     statusCode: 200,
                     message: '정상적인 유저입니다.',
+                    userId: user.id,
+                    email: user.email,
+                    nickname: user.nickname,
+                    userImage: user.userImage,
                 };
             }
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
             throw error;
         }
     }
@@ -111,6 +129,8 @@ class userAuthService {
     // 유저의 현재 포인트, 누적 포인트 불러오기
     static async getUserPoint({ userId }) {
         try {
+            await mysqlDB.query('START TRANSACTION');
+
             const user = await User.findById({ userId });
 
             if (!user) {
@@ -119,17 +139,21 @@ class userAuthService {
 
             const getUserPoint = await User.getPoint({ userId });
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '유저 포인트 내역 불러오기에 성공했습니다.',
                 userPoint: {
-                    id: getUserPoint.id,
+                    userId: getUserPoint.id,
                     nickname: getUserPoint.nickname,
                     imageUrl: getUserPoint.imageUrl,
                     accuPoint: getUserPoint.accuPoint,
                 },
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
             if (error instanceof UnauthorizedError) {
                 throw error;
             } else {
@@ -141,6 +165,8 @@ class userAuthService {
     // 전체 유저 수 불러오기
     static async getUserCount({ userId }) {
         try {
+            await mysqlDB.query('START TRANSACTION');
+
             const user = await User.findById({ userId });
 
             if (!user) {
@@ -149,12 +175,16 @@ class userAuthService {
 
             const getUserCount = await User.getCount();
 
+            await mysqlDB.query('COMMIT');
+
             return {
                 statusCode: 200,
                 message: '전체 유저 수 불러오기에 성공하셨습니다.',
                 userCount: getUserCount.userCount,
             };
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
             if (error instanceof UnauthorizedError) {
                 throw error;
             } else {
@@ -166,11 +196,15 @@ class userAuthService {
     // 유저 정보 불러오기
     static async getUserInfo({ userId }) {
         try {
+            await mysqlDB.query('START TRANSACTION');
+
             const user = await User.findById({ userId });
 
             if (!user) {
                 throw new NotFoundError('요청한 사용자의 정보를 찾을 수 없습니다.');
             } else {
+                await mysqlDB.query('COMMIT');
+
                 return {
                     statusCode: 200,
                     message: '유저 정보 불러오기에 성공하셨습니다.',
@@ -183,12 +217,14 @@ class userAuthService {
                 };
             }
         } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
             throw error;
         }
     }
 
     // 유저 정보 수정(별명, 설명)
-    static async setUserInfo({ userId, toUpdate }) {
+    static async setUserInfo({ userId, toUpdate, imageUrl }) {
         try {
             await mysqlDB.query('START TRANSACTION');
 
@@ -200,7 +236,7 @@ class userAuthService {
 
             // toUpdate -> nickName, description
             for (const [fieldToUpdate, newValue] of Object.entries(toUpdate)) {
-                await User.update({ userId, fieldToUpdate, newValue });
+                await User.update({ userId, fieldToUpdate, newValue, imageUrl });
             }
 
             await mysqlDB.query('COMMIT');
