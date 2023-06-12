@@ -119,7 +119,7 @@ class commentService {
             }
 
             const CommentList = await Comment.select({ postId });
-            console.log(CommentList);
+
             await mysqlDB.query('COMMIT');
 
             return {
