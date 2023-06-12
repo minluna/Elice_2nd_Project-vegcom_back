@@ -102,10 +102,10 @@ class commentService {
         }
     }
 
-    static async getComment({ userId, postId }) {
+    static async getComment({ userId, postId, cursor }) {
         try {
             await mysqlDB.query('START TRANSACTION');
-
+            let CommentList = [];
             const user = await User.findById({ userId });
 
             if (!user) {
@@ -118,7 +118,15 @@ class commentService {
                 throw new NotFoundError('요청한 게시물의 정보를 찾을 수 없습니다.');
             }
 
-            const CommentList = await Comment.select({ postId });
+            if (cursor == 0) {
+                CommentList = await Comment.zeroComment({ postId });
+            } else {
+                CommentList = await Comment.select({ postId, cursor });
+            }
+
+            if (CommentList.length === 0) {
+                console.log('불러올 댓글이 없습니다.');
+            }
 
             await mysqlDB.query('COMMIT');
 

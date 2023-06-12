@@ -34,21 +34,46 @@ class Comment {
     }
 
     // 전체 댓글 불러오기
-    static async select({ postId }) {
-        const getAllComenet =
-            'SELECT comment.id, \
-                    comment.userId, \
-                    user.nickname, \
-                    user_image.imageUrl, \
-                    comment.content \
+    static async select({ postId, cursor }) {
+        const getAllComment = `SELECT comment.id, \
+            comment.userId, \
+            user.nickname, \
+            user_image.imageUrl, \
+            comment.content \
             FROM comment \
             JOIN user \
             ON comment.userId = user.id \
             LEFT JOIN user_image \
             ON user.id = user_image.userId \
             WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null \
-            ORDER BY comment.createAt desc';
-        const [rows] = await mysqlDB.query(getAllComenet, [postId]);
+            AND comment.id < ? \
+            ORDER BY comment.createAt DESC LIMIT 3`;
+
+        const [rows] = await mysqlDB.query(getAllComment, [postId, cursor]);
+
+        return rows;
+
+        // 커서 기반
+        // SELECT * FROM article WHERE id < {cursor} ORDER BY comment.createAt DESC LIMIT {len}
+        // 마지막 댓글의 id보다 작은 값 len개를 찾아와서 보내주기.
+        // client에서 마지막으로 보낸 limit값을 받아와야? 될거 같은데?
+    }
+
+    static async zeroComment({ postId }) {
+        const getAllComment = `SELECT comment.id, \
+        comment.userId, \
+        user.nickname, \
+        user_image.imageUrl, \
+        comment.content \
+        FROM comment \
+        JOIN user \
+        ON comment.userId = user.id \
+        LEFT JOIN user_image \
+        ON user.id = user_image.userId \
+        WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null \
+        ORDER BY comment.createAt DESC LIMIT 3`;
+
+        const [rows] = await mysqlDB.query(getAllComment, [postId]);
 
         return rows;
     }
