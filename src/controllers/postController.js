@@ -6,7 +6,7 @@ class postController {
     static async getAllposts(req, res, next) {
         try {
             const userId = req.currentUserId;
-            const cursor = req.body.cursor;
+            const cursor = req.params.cursor;
 
             const posts = await postService.getAllPosts({ userId, cursor });
 

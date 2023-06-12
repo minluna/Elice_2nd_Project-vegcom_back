@@ -10,7 +10,7 @@ import { upload } from '../aws.config.js';
 const postRouter = Router();
 
 // 1. 전체 피드 시간순
-postRouter.get('/list', postController.getAllposts);
+postRouter.get('/list/:cursor', postController.getAllposts);
 
 // 6. 피드 개수와 피드 작성자의 수
 postRouter.get('/count', postController.getCount);
