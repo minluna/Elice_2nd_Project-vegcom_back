@@ -20,19 +20,10 @@ class userAuthController {
             const { email, password } = req.body;
 
             const loginUser = await userAuthService.getUser({ email, password });
-<<<<<<< HEAD
-            return res
-                .status(loginUser.statusCode)
-                .send({ message: loginUser.message, token: loginUser.token, userId: loginUser.userId });
-=======
 
             statusCode.setResponseCode200(res);
-<<<<<<< HEAD
-            return res.send({ message: loginUser.message, token: loginUser.token });
->>>>>>> 4a4e278 (Feat : 200, 201 응답코드에 해당하는 유틸함수를 생성해 각 controller에 적용)
-=======
+
             return res.send({ message: loginUser.message, token: loginUser.token, userId: loginUser.userId });
->>>>>>> b30d8ca (Feat : 로그인 시 userId 전달)
         } catch (error) {
             next(error);
         }
