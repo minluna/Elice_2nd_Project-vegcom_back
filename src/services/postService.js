@@ -3,9 +3,10 @@ import { UnauthorizedError, NotFoundError, InternalServerError } from '../middle
 
 class postService {
     //1. 전체 피드 시간순
-    static async getAllPosts({ userId }) {
+    static async getAllPosts({ userId, cursor }) {
         try {
             await mysqlDB.query('START TRANSACTION');
+            let posts = [];
 
             const user = await User.findById({ userId });
 
@@ -13,7 +14,11 @@ class postService {
                 throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
             }
 
-            const posts = await Post.getAllPosts();
+            if (cursor == 0) {
+                posts = await Post.recentPost();
+            } else {
+                posts = await Post.getAllPosts({ cursor });
+            }
 
             await mysqlDB.query('COMMIT');
 

@@ -2,7 +2,7 @@ import { mysqlDB } from '../index.js';
 
 class Post {
     //1. 전체 피드 최신순
-    static async getAllPosts() {
+    static async getAllPosts({ cursor }) {
         const getAllPost =
             'SELECT post.id as postId, \
                     post.userId, \
@@ -18,9 +18,36 @@ class Post {
             ON post.userId = user.id \
             LEFT JOIN user_image \
             ON post.userId = user_image.userId \
-            WHERE post.deleteAt is NULL AND user.deleteAt is NULL \
-            ORDER BY post.createAt DESC';
-        const [rows] = await mysqlDB.query(getAllPost);
+            WHERE post.deleteAt is NULL AND user.deleteAt is NULL AND post.id < ? \
+            ORDER BY post.createAt DESC\
+            LIMIT 5 ';
+
+        const [rows] = await mysqlDB.query(getAllPost, [cursor]);
+
+        return rows;
+    }
+
+    static async recentPost() {
+        const recentPost =
+            'SELECT post.id as postId, \
+                post.userId, \
+                user.nickname, \
+                post.content, \
+                post_image.imageUrl, \
+                user_image.imageUrl as userImage, \
+                post.createAt \
+        FROM post \
+        LEFT JOIN post_image \
+        ON post.id = post_image.postId \
+        LEFT JOIN user \
+        ON post.userId = user.id \
+        LEFT JOIN user_image \
+        ON post.userId = user_image.userId \
+        WHERE post.deleteAt is NULL AND user.deleteAt is NULL \
+        ORDER BY post.createAt DESC\
+        LIMIT 5 ';
+
+        const [rows] = await mysqlDB.query(recentPost);
 
         return rows;
     }
