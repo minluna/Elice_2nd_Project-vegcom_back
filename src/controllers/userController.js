@@ -20,15 +20,9 @@ class userAuthController {
             const { email, password } = req.body;
 
             const loginUser = await userAuthService.getUser({ email, password });
-<<<<<<< HEAD
-            return res
-                .status(loginUser.statusCode)
-                .send({ message: loginUser.message, token: loginUser.token, userId: loginUser.userId });
-=======
 
             statusCode.setResponseCode200(res);
             return res.send({ message: loginUser.message, token: loginUser.token, userId: loginUser.userId });
->>>>>>> feature/민준영
         } catch (error) {
             next(error);
         }
