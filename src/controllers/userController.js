@@ -1,4 +1,5 @@
 import { userAuthService } from '../services/userService.js';
+import { statusCode } from '../utils/statusCode.js';
 
 class userAuthController {
     static async register(req, res, next) {
@@ -6,7 +7,9 @@ class userAuthController {
             const { email, password, nickname, imageUrl } = req.body;
 
             const createUser = await userAuthService.createUser({ email, password, nickname, imageUrl });
-            return res.status(createUser.statusCode).send(createUser.message);
+
+            statusCode.setResponseCode201(res);
+            return res.send(createUser.message);
         } catch (error) {
             next(error);
         }
@@ -17,9 +20,15 @@ class userAuthController {
             const { email, password } = req.body;
 
             const loginUser = await userAuthService.getUser({ email, password });
+<<<<<<< HEAD
             return res
                 .status(loginUser.statusCode)
                 .send({ message: loginUser.message, token: loginUser.token, userId: loginUser.userId });
+=======
+
+            statusCode.setResponseCode200(res);
+            return res.send({ message: loginUser.message, token: loginUser.token, userId: loginUser.userId });
+>>>>>>> feature/민준영
         } catch (error) {
             next(error);
         }
@@ -30,7 +39,9 @@ class userAuthController {
             const userId = req.currentUserId;
 
             const checkUser = await userAuthService.loginCheck({ userId });
-            return res.status(checkUser.statusCode).send({
+
+            statusCode.setResponseCode200(res);
+            return res.send({
                 message: checkUser.message,
                 userId: checkUser.userId,
                 email: checkUser.email,
@@ -47,7 +58,9 @@ class userAuthController {
             const userId = req.currentUserId;
 
             const getPoint = await userAuthService.getUserPoint({ userId });
-            return res.status(getPoint.statusCode).send({ message: getPoint.message, userPoint: getPoint.userPoint });
+
+            statusCode.setResponseCode200(res);
+            return res.send({ message: getPoint.message, userPoint: getPoint.userPoint });
         } catch (error) {
             next(error);
         }
@@ -58,7 +71,9 @@ class userAuthController {
             const userId = req.currentUserId;
 
             const getCount = await userAuthService.getUserCount({ userId });
-            return res.status(getCount.statusCode).send({ message: getCount.message, userCount: getCount.userCount });
+
+            statusCode.setResponseCode200(res);
+            return res.send({ message: getCount.message, userCount: getCount.userCount });
         } catch (error) {
             next(error);
         }
@@ -69,7 +84,9 @@ class userAuthController {
             const userId = req.params.userId;
 
             const getInfo = await userAuthService.getUserInfo({ userId });
-            return res.status(getInfo.statusCode).send({ message: getInfo.message, userInfo: getInfo.userInfo });
+
+            statusCode.setResponseCode200(res);
+            return res.send({ message: getInfo.message, userInfo: getInfo.userInfo });
         } catch (error) {
             next(error);
         }
@@ -84,7 +101,9 @@ class userAuthController {
             const toUpdate = { nickname, description };
 
             const setInfo = await userAuthService.setUserInfo({ userId, toUpdate, imageUrl });
-            return res.status(setInfo.statusCode).send({ message: setInfo.message });
+
+            statusCode.setResponseCode200(res);
+            return res.send({ message: setInfo.message });
         } catch (error) {
             next(error);
         }
@@ -95,7 +114,9 @@ class userAuthController {
             const userId = req.params.userId;
 
             const delInfo = await userAuthService.delUserInfo({ userId });
-            return res.status(delInfo.statusCode).send({ message: delInfo.message });
+
+            statusCode.setResponseCode200(res);
+            return res.send({ message: delInfo.message });
         } catch (error) {
             next(error);
         }

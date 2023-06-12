@@ -1,4 +1,5 @@
 import { postService } from '../services/postService.js';
+import { statusCode } from '../utils/statusCode.js';
 
 class postController {
     // 1. 전체 피드 시간순
@@ -7,7 +8,9 @@ class postController {
             const userId = req.currentUserId;
 
             const posts = await postService.getAllPosts({ userId });
-            res.status(posts.statusCode).send({ message: posts.message, postList: posts.posts });
+
+            statusCode.setResponseCode200(res);
+            res.send({ message: posts.message, postList: posts.posts });
         } catch (error) {
             next(error);
         }
@@ -20,7 +23,9 @@ class postController {
             const postId = req.params.postId;
 
             const post = await postService.getPost({ userId, postId });
-            res.status(post.statusCode).send({ message: post.message, post: post.post });
+
+            statusCode.setResponseCode200(res);
+            res.send({ message: post.message, post: post.post });
         } catch (error) {
             next(error);
         }
@@ -35,7 +40,9 @@ class postController {
             const imageUrl = req.file.key;
 
             const post = await postService.createPost({ userId, content, imageUrl });
-            res.status(post.statusCode).send({ message: post.message });
+
+            statusCode.setResponseCode201(res);
+            res.send({ message: post.message });
         } catch (error) {
             next(error);
         }
@@ -52,7 +59,8 @@ class postController {
             const toUpdate = { content, imageUrl };
             const post = await postService.setPost({ userId, postId, toUpdate });
 
-            res.status(post.statusCode).send({ message: post.message });
+            statusCode.setResponseCode200(res);
+            res.send({ message: post.message });
         } catch (error) {
             next(error);
         }
@@ -66,7 +74,8 @@ class postController {
 
             const post = await postService.delPost({ userId, postId });
 
-            res.status(post.statusCode).send({ message: post.message });
+            statusCode.setResponseCode200(res);
+            res.send({ message: post.message });
         } catch (error) {
             next(error);
         }
@@ -79,7 +88,8 @@ class postController {
 
             const post = await postService.getCountPostUser({ userId });
 
-            res.status(post.statusCode).send({ message: post.message, postCount: post.postCount, userCount: post.userCount });
+            statusCode.setResponseCode200(res);
+            res.send({ message: post.message, postCount: post.postCount, userCount: post.userCount });
         } catch (error) {
             next(error);
         }

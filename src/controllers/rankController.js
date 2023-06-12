@@ -1,4 +1,5 @@
 import { rankService } from '../services/rankService.js';
+import { statusCode } from '../utils/statusCode.js';
 
 class rankController {
     static async rankList(req, res, next) {
@@ -6,7 +7,9 @@ class rankController {
             const userId = req.currentUserId;
 
             const getRank = await rankService.getRankList({ userId });
-            return res.status(getRank.statusCode).send({ message: getRank.message, rankList: getRank.rankList });
+
+            statusCode.setResponseCode200(res);
+            return res.send({ message: getRank.message, rankList: getRank.rankList });
         } catch (error) {
             next(error);
         }

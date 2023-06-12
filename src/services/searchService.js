@@ -17,7 +17,6 @@ class searchService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '키워드를 포함한 게시물 불러오기에 성공했습니다.',
                 searchPost,
             };
