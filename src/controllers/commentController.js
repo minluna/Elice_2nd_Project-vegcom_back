@@ -53,7 +53,11 @@ class commentController {
             const getComment = await commentService.getComment({ userId, postId });
 
             statusCode.setResponseCode200(res);
-            return res.send({ message: getComment.message, commentList: getComment.CommentList });
+            return res.send({
+                message: getComment.message,
+                commentListZero: getComment.CommentListZero,
+                commentListOther: getComment.CommentListOther,
+            });
         } catch (error) {
             next(error);
         }
