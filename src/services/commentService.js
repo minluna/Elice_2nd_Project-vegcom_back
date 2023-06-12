@@ -124,9 +124,9 @@ class commentService {
                 CommentList = await Comment.select({ postId, cursor });
             }
 
-            if (CommentList.length === 0) {
-                console.log('불러올 댓글이 없습니다.');
-            }
+            // commentList가 없을 때 에러를 보내면...
+            // 상세페이지 조회할 때.. 댓글이 없는 경우 에러가 발생하기 때문에
+            // 그에 대한 에러처리는 없는게 나을거 같다.....?
 
             await mysqlDB.query('COMMIT');
 

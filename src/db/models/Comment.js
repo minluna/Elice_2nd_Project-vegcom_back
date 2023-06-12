@@ -47,16 +47,11 @@ class Comment {
             ON user.id = user_image.userId \
             WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null \
             AND comment.id < ? \
-            ORDER BY comment.createAt DESC LIMIT 3`;
+            ORDER BY comment.createAt DESC LIMIT 10`;
 
         const [rows] = await mysqlDB.query(getAllComment, [postId, cursor]);
 
         return rows;
-
-        // 커서 기반
-        // SELECT * FROM article WHERE id < {cursor} ORDER BY comment.createAt DESC LIMIT {len}
-        // 마지막 댓글의 id보다 작은 값 len개를 찾아와서 보내주기.
-        // client에서 마지막으로 보낸 limit값을 받아와야? 될거 같은데?
     }
 
     static async zeroComment({ postId }) {
@@ -71,7 +66,7 @@ class Comment {
         LEFT JOIN user_image \
         ON user.id = user_image.userId \
         WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null \
-        ORDER BY comment.createAt DESC LIMIT 3`;
+        ORDER BY comment.createAt DESC LIMIT 10`;
 
         const [rows] = await mysqlDB.query(getAllComment, [postId]);
 

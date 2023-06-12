@@ -5,6 +5,7 @@ import { addCommentValidationRules, addComment_validate } from '../middlewares/a
 import { setCommentValidationRules, setComment_validate } from '../middlewares/setComment_validate.js';
 import { commentParams_validate } from '../middlewares/commentParams_validate.js';
 import { postParams_validate } from '../middlewares/postParams_validate.js';
+import { getCommentValidationRules, getComment_validate } from '../middlewares/getComment_validate.js';
 
 const commentRouter = Router();
 
@@ -18,6 +19,6 @@ commentRouter.put('/:commentId', setCommentValidationRules, setComment_validate,
 commentRouter.delete('/:commentId', commentParams_validate, commentController.delete);
 
 // 게시물에 해당하는 댓글 불러오기
-commentRouter.get('/:postId', postParams_validate, commentController.getComment);
+commentRouter.get('/:postId', getCommentValidationRules, getComment_validate, postParams_validate, commentController.getComment);
 
 export { commentRouter };
