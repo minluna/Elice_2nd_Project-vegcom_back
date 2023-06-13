@@ -16,6 +16,8 @@ class postService {
 
             if (cursor == 0) {
                 posts = await Post.recentPost();
+            } else if (cursor == -1) {
+                posts = '전체 게시물 조회가 끝났습니다.';
             } else {
                 posts = await Post.getAllPosts({ cursor });
             }

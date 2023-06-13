@@ -1,7 +1,7 @@
 import { mysqlDB } from '../index.js';
 
 class Rank {
-    static async getRankList({ cursor }) {
+    static async getRankList({ point, date }) {
         const getRankList =
             'SELECT user.id as userId, \
                     user.nickname, \
@@ -13,10 +13,10 @@ class Rank {
                     ON user.id = user_image.userId \
                     LEFT JOIN point \
                     ON user.id = point.userId \
-                    WHERE user.deleteAt is null \
-                    ORDER BY point.accuPoint desc \
+                    WHERE user.deleteAt is null AND point.accuPoint < ? AND user.creatAt < ? \
+                    ORDER BY point.accuPoint desc AND user.createAt \
                     LIMIT 10 ';
-        const [rows] = await mysqlDB.query(getRankList, [cursor]);
+        const [rows] = await mysqlDB.query(getRankList, [point, date]);
 
         return rows;
     }
@@ -34,7 +34,7 @@ class Rank {
                     LEFT JOIN point \
                     ON user.id = point.userId \
                     WHERE user.deleteAt is null \
-                    ORDER BY point.accuPoint desc \
+                    ORDER BY point.accuPoint desc AND user.createAt \
                     LIMIT 10 ';
         const [rows] = await mysqlDB.query(getRankList);
 
