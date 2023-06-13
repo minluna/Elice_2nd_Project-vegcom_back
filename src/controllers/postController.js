@@ -94,6 +94,21 @@ class postController {
             next(error);
         }
     }
+
+    // 7. 특정 유저의 피드 불러오기
+    static async getUserPost(req, res, next) {
+        try {
+            const userId = req.currentUserId;
+            const postUserId = req.params.userId;
+
+            const postList = await postService.getUserByPost({ userId, postUserId });
+
+            statusCode.setResponseCode200(res);
+            res.send({ message: postList.message, userPostList: postList.userPostList });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export { postController };
