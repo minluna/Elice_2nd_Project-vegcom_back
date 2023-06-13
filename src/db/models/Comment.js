@@ -37,10 +37,10 @@ class Comment {
     static async select({ postId }) {
         const getAllComenetParentZero =
             'SELECT comment.id, \
-                    comment.userId, \
-                    user.nickname, \
-                    user_image.imageUrl, \
-                    comment.content \
+            comment.userId, \
+            user.nickname, \
+            user_image.imageUrl, \
+            comment.content \
             FROM comment \
             JOIN user \
             ON comment.userId = user.id \
@@ -52,17 +52,18 @@ class Comment {
 
         const getAllComenetParentOther =
             'SELECT comment.id, \
-                    comment.userId, \
-                    user.nickname, \
-                    user_image.imageUrl, \
-                    comment.content \
-            FROM comment \
-            JOIN user \
-            ON comment.userId = user.id \
-            LEFT JOIN user_image \
-            ON user.id = user_image.userId \
-            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.parentId != 0 \
-            ORDER BY comment.createAt desc';
+        comment.userId, \
+        user.nickname, \
+        user_image.imageUrl, \
+        comment.content \
+        FROM comment \
+        JOIN user \
+        ON comment.userId = user.id \
+        LEFT JOIN user_image \
+        ON user.id = user_image.userId \
+        WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null \
+        ORDER BY comment.createAt DESC LIMIT 10';
+
         const [rows2] = await mysqlDB.query(getAllComenetParentOther, [postId]);
 
         return [rows1, rows2];

@@ -49,8 +49,9 @@ class commentController {
         try {
             const userId = req.currentUserId;
             const postId = req.params.postId;
+            const cursor = req.params.cursor;
 
-            const getComment = await commentService.getComment({ userId, postId });
+            const getComment = await commentService.getComment({ userId, postId, cursor });
 
             statusCode.setResponseCode200(res);
             return res.send({
