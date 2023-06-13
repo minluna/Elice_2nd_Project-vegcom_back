@@ -126,6 +126,22 @@ class Post {
 
         return rows[0];
     }
+
+    //
+    static async getUserPost({ postUserId }) {
+        const postByUser =
+            'SELECT post.id, \
+                    post_image.imageUrl  \
+            FROM post \
+            LEFT JOIN post_image \
+            ON post.id = post_image.postId \
+            WHERE post.userId = ? AND post.deleteAt is NULL \
+            ORDER BY post.createAt desc';
+
+        const [rows] = await mysqlDB.query(postByUser, [postUserId]);
+
+        return rows;
+    }
 }
 
 export { Post };

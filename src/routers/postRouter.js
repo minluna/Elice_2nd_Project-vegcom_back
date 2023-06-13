@@ -4,6 +4,7 @@ import { postController } from '../controllers/postController.js';
 import { postParams_validate } from '../middlewares/postParams_validate.js';
 import { addPostValidationRules, addPost_validate } from '../middlewares/addPost_validate.js';
 import { setPostValidationRules, setPost_validate } from '../middlewares/setPost_validate.js';
+import { userParams_validate } from '../middlewares/userParams_validate.js';
 
 import { upload } from '../aws.config.js';
 import { getPost_validate } from '../middlewares/getPost_vaildate.js';
@@ -15,6 +16,9 @@ postRouter.get('/list/:cursor', getPost_validate, postController.getAllposts);
 
 // 6. 피드 개수와 피드 작성자의 수
 postRouter.get('/count', postController.getCount);
+
+// 7. 특정 유저의 피드 불러오기
+postRouter.get('/mypage/:userId', userParams_validate, postController.getUserPost);
 
 // 2. 피드 상세페이지
 postRouter.get('/:postId', postParams_validate, postController.getPost);

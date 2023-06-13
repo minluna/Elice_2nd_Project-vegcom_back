@@ -34,7 +34,42 @@ class Comment {
     }
 
     // 전체 댓글 불러오기
-    static async select({ postId }) {
+    static async select({ postId, cursor }) {
+        const getAllComenetParentZero =
+            'SELECT comment.id, \
+                    comment.userId, \
+                    user.nickname, \
+                    user_image.imageUrl, \
+                    comment.content \
+            FROM comment \
+            JOIN user \
+            ON comment.userId = user.id \
+            LEFT JOIN user_image \
+            ON user.id = user_image.userId \
+            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.id < ? AND comment.parentId = 0 \
+            ORDER BY comment.createAt desc';
+        const [rows1] = await mysqlDB.query(getAllComenetParentZero, [postId, cursor]);
+
+        const getAllComenetParentOther =
+            'SELECT comment.id, \
+                    comment.userId, \
+                    user.nickname, \
+                    user_image.imageUrl, \
+                    comment.content \
+            FROM comment \
+            JOIN user \
+            ON comment.userId = user.id \
+            LEFT JOIN user_image \
+            ON user.id = user_image.userId \
+            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.id < ? \
+            ORDER BY comment.createAt DESC LIMIT 10';
+
+        const [rows2] = await mysqlDB.query(getAllComenetParentOther, [postId, cursor]);
+
+        return [rows1, rows2];
+    }
+
+    static async zeroComment({ postId }) {
         const getAllComenetParentZero =
             'SELECT comment.id, \
                     comment.userId, \
@@ -47,7 +82,7 @@ class Comment {
             LEFT JOIN user_image \
             ON user.id = user_image.userId \
             WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.parentId = 0 \
-            ORDER BY comment.createAt desc';
+            ORDER BY comment.createAt desc LIMIT 10';
         const [rows1] = await mysqlDB.query(getAllComenetParentZero, [postId]);
 
         const getAllComenetParentOther =
@@ -61,8 +96,9 @@ class Comment {
             ON comment.userId = user.id \
             LEFT JOIN user_image \
             ON user.id = user_image.userId \
-            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.parentId != 0 \
-            ORDER BY comment.createAt desc';
+            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null \
+            ORDER BY comment.createAt DESC LIMIT 10';
+
         const [rows2] = await mysqlDB.query(getAllComenetParentOther, [postId]);
 
         return [rows1, rows2];
