@@ -3,6 +3,6 @@ import { rankController } from '../controllers/rankController.js';
 
 const rankRouter = Router();
 
-rankRouter.get('/list', rankController.rankList);
+rankRouter.get('/list/:cursor', rankController.rankList);
 
 export { rankRouter };

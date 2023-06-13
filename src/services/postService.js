@@ -27,7 +27,13 @@ class postService {
                 posts,
             };
         } catch (error) {
-            throw error;
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError('게시물 전체 조회를 실패했습니다.');
+            }
         }
     }
 
