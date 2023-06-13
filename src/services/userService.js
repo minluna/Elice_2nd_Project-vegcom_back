@@ -206,6 +206,8 @@ class userAuthService {
                         email: user.email,
                         nickname: user.nickname,
                         userImage: user.userImage,
+                        createAt: user.createAt,
+                        storyCount: user.storyCount,
                     },
                 };
             }
