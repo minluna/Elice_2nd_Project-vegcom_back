@@ -19,6 +19,6 @@ commentRouter.put('/:commentId', setCommentValidationRules, setComment_validate,
 commentRouter.delete('/:commentId', commentParams_validate, commentController.delete);
 
 // 게시물에 해당하는 댓글 불러오기
-commentRouter.get('/:postId/:cursor', getComment_validate, postParams_validate, commentController.getComment);
+commentRouter.get('/', commentController.getComment);
 
 export { commentRouter };
