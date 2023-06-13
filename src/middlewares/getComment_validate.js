@@ -1,8 +1,8 @@
 import { BadRequestError } from './errorMiddleware.js';
 
 const getComment_validate = (req, res, next) => {
-    const postId = req.params.postId;
-    const cursor = req.params.cursor;
+    const postId = req.query.postId;
+    const cursor = req.query.cursor;
 
     if (!postId || isNaN(postId)) {
         throw new BadRequestError('게시물의 ID를 확인해주세요.');
