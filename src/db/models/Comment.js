@@ -61,7 +61,7 @@ class Comment {
             ON comment.userId = user.id \
             LEFT JOIN user_image \
             ON user.id = user_image.userId \
-            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.id < ? \
+            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.id < ?  AND comment.parentId != 0 \
             ORDER BY comment.createAt DESC LIMIT 10';
 
         const [rows2] = await mysqlDB.query(getAllComenetParentOther, [postId, cursor]);
@@ -96,7 +96,7 @@ class Comment {
             ON comment.userId = user.id \
             LEFT JOIN user_image \
             ON user.id = user_image.userId \
-            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null \
+            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.parentId != 0 \
             ORDER BY comment.createAt DESC LIMIT 10';
 
         const [rows2] = await mysqlDB.query(getAllComenetParentOther, [postId]);
