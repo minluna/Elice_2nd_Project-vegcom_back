@@ -47,7 +47,7 @@ class Comment {
             LEFT JOIN user_image \
             ON user.id = user_image.userId \
             WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.id < ? AND comment.parentId = 0 \
-            ORDER BY comment.createAt desc';
+            ORDER BY comment.createAt desc LIMIT 10';
         const [rows1] = await mysqlDB.query(getAllComenetParentZero, [postId, cursor]);
 
         const getAllComenetParentOther =

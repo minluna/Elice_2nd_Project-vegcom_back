@@ -120,6 +120,8 @@ class commentService {
 
             if (cursor == 0) {
                 CommentList = await Comment.zeroComment({ postId });
+            } else if (cursor == -1) {
+                CommentList = ['전체 댓글 조회가 끝났습니다.', '전체 댓글 조회가 끝났습니다.'];
             } else {
                 CommentList = await Comment.select({ postId, cursor });
             }
