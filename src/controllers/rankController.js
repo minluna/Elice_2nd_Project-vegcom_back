@@ -6,9 +6,8 @@ class rankController {
         try {
             const userId = req.currentUserId;
             const point = req.params.point;
-            const date = req.params.date;
 
-            const getRank = await rankService.getRankList({ userId, point, date });
+            const getRank = await rankService.getRankList({ userId, point });
 
             statusCode.setResponseCode200(res);
             return res.send({ message: getRank.message, rankList: getRank.rankList });

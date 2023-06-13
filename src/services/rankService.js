@@ -2,7 +2,7 @@ import { mysqlDB, User, Rank } from '../db/index.js';
 import { UnauthorizedError, InternalServerError } from '../middlewares/errorMiddleware.js';
 
 class rankService {
-    static async getRankList({ userId, point, date }) {
+    static async getRankList({ userId, point }) {
         try {
             await mysqlDB.query('START TRANSACTION');
             let rankList = [];
@@ -14,11 +14,9 @@ class rankService {
             }
 
             if (point == 0) {
-                rankList = await Rank.firstRankList();
-            } else if (point == -1) {
-                rankList = '전체 불러오기가 끝났습니다.';
+                rankList = await Rank.topTenRankList();
             } else {
-                rankList = await Rank.getRankList({ point, date });
+                rankList = '전체 불러오기가 끝났습니다.';
             }
 
             await mysqlDB.query('COMMIT');

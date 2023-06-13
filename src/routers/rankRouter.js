@@ -3,6 +3,6 @@ import { rankController } from '../controllers/rankController.js';
 
 const rankRouter = Router();
 
-rankRouter.get('/list/:point/:date', rankController.rankList);
+rankRouter.get('/list/:point', rankController.rankList);
 
 export { rankRouter };
