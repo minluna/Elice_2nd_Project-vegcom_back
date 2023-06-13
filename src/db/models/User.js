@@ -27,11 +27,13 @@ class User {
     // 유저ID를 이용하여 유저 검색
     static async findById({ userId }) {
         const getUserById =
-            'SELECT id, email, nickname, user_image.imageUrl as userImage \
-                FROM user \
-                LEFT JOIN user_image \
-                ON user.id = user_image.userId \
-                WHERE user.id = ? AND deleteAt is null';
+            'SELECT id, email, nickname, user.createAt, user_image.imageUrl as userImage, \
+        point.accuPoint, \
+        (SELECT count(id) FROM post WHERE post.userId = user.id) as storyCount \
+        FROM user \
+        LEFT JOIN user_image ON user.id = user_image.userId \
+        LEFT JOIN point ON user.id = point.userId \
+        WHERE user.id = ? AND deleteAt is null';
         const [rows] = await mysqlDB.query(getUserById, [userId]);
 
         return rows[0];
