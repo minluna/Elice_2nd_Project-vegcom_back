@@ -5,8 +5,9 @@ class rankController {
     static async rankList(req, res, next) {
         try {
             const userId = req.currentUserId;
+            const point = req.params.point;
 
-            const getRank = await rankService.getRankList({ userId });
+            const getRank = await rankService.getRankList({ userId, point });
 
             statusCode.setResponseCode200(res);
             return res.send({ message: getRank.message, rankList: getRank.rankList });

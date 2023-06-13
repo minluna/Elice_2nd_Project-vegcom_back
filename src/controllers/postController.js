@@ -6,8 +6,9 @@ class postController {
     static async getAllposts(req, res, next) {
         try {
             const userId = req.currentUserId;
+            const cursor = req.params.cursor;
 
-            const posts = await postService.getAllPosts({ userId });
+            const posts = await postService.getAllPosts({ userId, cursor });
 
             statusCode.setResponseCode200(res);
             res.send({ message: posts.message, postList: posts.posts });

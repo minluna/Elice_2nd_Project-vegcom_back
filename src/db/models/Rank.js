@@ -1,7 +1,7 @@
 import { mysqlDB } from '../index.js';
 
 class Rank {
-    static async getRankList() {
+    static async topTenRankList() {
         const getRankList =
             'SELECT user.id as userId, \
                     user.nickname, \
@@ -14,7 +14,8 @@ class Rank {
                     LEFT JOIN point \
                     ON user.id = point.userId \
                     WHERE user.deleteAt is null \
-                    ORDER BY point.accuPoint desc';
+                    ORDER BY point.accuPoint desc, user.createAt desc \
+                    LIMIT 10 ';
         const [rows] = await mysqlDB.query(getRankList);
 
         return rows;

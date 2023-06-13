@@ -2,9 +2,10 @@ import { mysqlDB, User, Rank } from '../db/index.js';
 import { UnauthorizedError, InternalServerError } from '../middlewares/errorMiddleware.js';
 
 class rankService {
-    static async getRankList({ userId }) {
+    static async getRankList({ userId, point }) {
         try {
             await mysqlDB.query('START TRANSACTION');
+            let rankList = [];
 
             const user = await User.findById({ userId });
 
@@ -12,7 +13,11 @@ class rankService {
                 throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
             }
 
-            const rankList = await Rank.getRankList();
+            if (point == 0) {
+                rankList = await Rank.topTenRankList();
+            } else {
+                rankList = '전체 불러오기가 끝났습니다.';
+            }
 
             await mysqlDB.query('COMMIT');
 
