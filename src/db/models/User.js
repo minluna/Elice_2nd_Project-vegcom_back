@@ -27,16 +27,46 @@ class User {
     // 유저ID를 이용하여 유저 검색
     static async findById({ userId }) {
         const getUserById =
-            'SELECT id, email, nickname, user.createAt, user_image.imageUrl as userImage, \
-        point.accuPoint, \
-        (SELECT count(id) FROM post WHERE post.userId = user.id) as storyCount \
-        FROM user \
-        LEFT JOIN user_image ON user.id = user_image.userId \
-        LEFT JOIN point ON user.id = point.userId \
-        WHERE user.id = ? AND deleteAt is null';
-        const [rows] = await mysqlDB.query(getUserById, [userId]);
+            'SELECT id, email, nickname, user.createAt, user_image.imageUrl as userImage, point.accuPoint, user.createAt, \
+                    (SELECT count(id) FROM post WHERE post.userId = user.id) as storyCount \
+            FROM user \
+            LEFT JOIN user_image \
+            ON user.id = user_image.userId \
+            LEFT JOIN point \
+            ON user.id = point.userId \
+            WHERE user.id = ? AND deleteAt is null';
 
-        return rows[0];
+        const [rows1] = await mysqlDB.query(getUserById, [userId]);
+
+        const getUserAccuRank =
+            'SELECT AccuRanking \
+            FROM ( \
+                SELECT \
+                    ROW_NUMBER() OVER (ORDER BY point.accuPoint DESC) as AccuRanking, \
+                    user.id \
+                FROM user \
+                LEFT JOIN user_image ON user.id = user_image.userId \
+                LEFT JOIN point ON user.id = point.userId \
+                WHERE deleteAt IS NULL ) AS rankings \
+            WHERE id = ?';
+        const [rows2] = await mysqlDB.query(getUserAccuRank, [userId]);
+
+        const getUserTodayRank =
+            'SELECT TodayRanking \
+            FROM ( \
+                SELECT ROW_NUMBER() OVER (ORDER BY point.accuPoint DESC) as TodayRanking, user.id, \
+                        (SELECT count(id) FROM post WHERE post.userId = user.id and DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE()) as storyCount \
+                FROM user \
+                LEFT JOIN user_image \
+                ON user.id = user_image.userId \
+                LEFT JOIN point \
+                ON user.id = point.userId \
+                WHERE  deleteAt is null \
+                ORDER BY storyCount desc, createAt asc ) as rankings \
+            WHERE id = ?';
+        const [rows3] = await mysqlDB.query(getUserTodayRank, [userId]);
+
+        return [rows1[0], rows2[0], rows3[0]];
     }
 
     // 유저의 포인트 내역 불러오기

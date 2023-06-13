@@ -193,7 +193,7 @@ class userAuthService {
             await mysqlDB.query('START TRANSACTION');
 
             const user = await User.findById({ userId });
-
+            console.log(user);
             if (!user) {
                 throw new NotFoundError('요청한 사용자의 정보를 찾을 수 없습니다.');
             } else {
@@ -202,12 +202,15 @@ class userAuthService {
                 return {
                     message: '유저 정보 불러오기에 성공하셨습니다.',
                     userInfo: {
-                        id: user.id,
-                        email: user.email,
-                        nickname: user.nickname,
-                        userImage: user.userImage,
-                        createAt: user.createAt,
-                        storyCount: user.storyCount,
+                        id: user[0].id,
+                        email: user[0].email,
+                        nickname: user[0].nickname,
+                        userImage: user[0].userImage,
+                        accuPoint: user[0].accuPoint,
+                        storyCount: user[0].storyCount,
+                        createAt: user[0].createAt,
+                        AccuRanking: user[1].AccuRanking,
+                        TodayRanking: user[2].TodayRanking,
                     },
                 };
             }
