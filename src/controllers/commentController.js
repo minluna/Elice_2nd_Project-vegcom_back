@@ -51,8 +51,6 @@ class commentController {
             const postId = req.query.postId;
             const cursor = req.query.cursor;
 
-            console.log(postId, cursor);
-
             const getComment = await commentService.getComment({ userId, postId, cursor });
 
             statusCode.setResponseCode200(res);

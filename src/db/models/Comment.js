@@ -41,7 +41,7 @@ class Comment {
                     user.nickname, \
                     user_image.imageUrl, \
                     comment.content, \
-                    commnet.parentId \
+                    comment.parentId \
             FROM comment \
             JOIN user \
             ON comment.userId = user.id \
@@ -57,7 +57,7 @@ class Comment {
                     user.nickname, \
                     user_image.imageUrl, \
                     comment.content, \
-                    commnet.parentId \
+                    comment.parentId \
             FROM comment \
             JOIN user \
             ON comment.userId = user.id \
@@ -78,7 +78,7 @@ class Comment {
                     user.nickname, \
                     user_image.imageUrl, \
                     comment.content, \
-                    commnet.parentId \
+                    comment.parentId \
             FROM comment \
             JOIN user \
             ON comment.userId = user.id \
@@ -94,7 +94,7 @@ class Comment {
                     user.nickname, \
                     user_image.imageUrl, \
                     comment.content, \
-                    commnet.parentId \
+                    comment.parentId \
             FROM comment \
             JOIN user \
             ON comment.userId = user.id \
