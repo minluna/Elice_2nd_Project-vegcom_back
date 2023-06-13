@@ -124,7 +124,8 @@ class commentService {
 
             return {
                 message: '게시글 총 댓글 불러오기에 성공하셨습니다.',
-                CommentList,
+                CommentListZero: CommentList[0],
+                CommentListOther: CommentList[1],
             };
         } catch (error) {
             await mysqlDB.query('ROLLBACK');

@@ -35,7 +35,7 @@ class Comment {
 
     // 전체 댓글 불러오기
     static async select({ postId }) {
-        const getAllComenet =
+        const getAllComenetParentZero =
             'SELECT comment.id, \
                     comment.userId, \
                     user.nickname, \
@@ -46,11 +46,26 @@ class Comment {
             ON comment.userId = user.id \
             LEFT JOIN user_image \
             ON user.id = user_image.userId \
-            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null \
+            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.parentId = 0 \
             ORDER BY comment.createAt desc';
-        const [rows] = await mysqlDB.query(getAllComenet, [postId]);
+        const [rows1] = await mysqlDB.query(getAllComenetParentZero, [postId]);
 
-        return rows;
+        const getAllComenetParentOther =
+            'SELECT comment.id, \
+                    comment.userId, \
+                    user.nickname, \
+                    user_image.imageUrl, \
+                    comment.content \
+            FROM comment \
+            JOIN user \
+            ON comment.userId = user.id \
+            LEFT JOIN user_image \
+            ON user.id = user_image.userId \
+            WHERE comment.postId = ? AND comment.deleteAt is null AND user.deleteAt is null AND comment.parentId != 0 \
+            ORDER BY comment.createAt desc';
+        const [rows2] = await mysqlDB.query(getAllComenetParentOther, [postId]);
+
+        return [rows1, rows2];
     }
 }
 
