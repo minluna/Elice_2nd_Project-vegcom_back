@@ -80,14 +80,17 @@ class Post {
         const createPost = 'INSERT INTO post (userId, content) VALUES (?, ?)';
         await mysqlDB.query(createPost, [userId, content]);
 
-        const createPostImage = 'INSERT INTO post_image (postId, imageUrl) VALUES (LAST_INSERT_ID(), ?)';
-        await mysqlDB.query(createPostImage, [imageUrl]);
+        const getPostId = 'SELECT id FROM post WHERE userId = ? AND content = ?';
+        const postId = await mysqlDB.query(getPostId, [userId, content]);
+
+        const createPostImage = 'INSERT INTO post_image (postId, imageUrl) VALUES (?, ?)';
+        await mysqlDB.query(createPostImage, [postId[0][0].id, imageUrl]);
 
         const grantPoint =
             'UPDATE point \
             SET currentPoint = currentPoint + 100, accuPoint = accuPoint + 100 \
-            WHERE userId = 31 AND 3 > (select count(id) from post where userId = ? and DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE())';
-        await mysqlDB.query(grantPoint, [userId]);
+            WHERE userId = ? AND 3 > (select count(id) from post where userId = ? and DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE())';
+        await mysqlDB.query(grantPoint, [userId, userId]);
     }
 
     //4. 피드 수정하기(포스트와 이미지를 나눠서 작성)

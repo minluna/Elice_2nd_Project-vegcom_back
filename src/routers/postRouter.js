@@ -5,9 +5,9 @@ import { postParams_validate } from '../middlewares/postParams_validate.js';
 import { addPostValidationRules, addPost_validate } from '../middlewares/addPost_validate.js';
 import { setPostValidationRules, setPost_validate } from '../middlewares/setPost_validate.js';
 import { userParams_validate } from '../middlewares/userParams_validate.js';
+import { getPost_validate } from '../middlewares/getPost_vaildate.js';
 
 import { upload } from '../aws.config.js';
-import { getPost_validate } from '../middlewares/getPost_vaildate.js';
 
 const postRouter = Router();
 
@@ -27,7 +27,7 @@ postRouter.get('/:postId', postParams_validate, postController.getPost);
 postRouter.post('/', upload.single('image'), addPostValidationRules, addPost_validate, postController.createPost);
 
 // 4. 피드 수정
-postRouter.put('/:postId', setPostValidationRules, setPost_validate, postController.setPost);
+postRouter.put('/:postId', upload.single('image'), setPostValidationRules, setPost_validate, postController.setPost);
 
 // 5. 피드 삭제
 postRouter.delete('/:postId', postParams_validate, postController.delPost);

@@ -55,7 +55,8 @@ class postController {
             const userId = req.currentUserId;
 
             const postId = req.params.postId;
-            const { content, imageUrl } = req.body;
+            const { content } = req.body;
+            const imageUrl = req.file.key;
 
             const toUpdate = { content, imageUrl };
             const post = await postService.setPost({ userId, postId, toUpdate });

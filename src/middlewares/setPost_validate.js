@@ -16,6 +16,12 @@ const setPost_validate = (req, res, next) => {
         throw new BadRequestError('게시물의 ID를 확인해주세요.');
     }
 
+    const imageUrl = req.file;
+
+    if (!imageUrl) {
+        throw new BadRequestError('imageUrl을 확인해주세요.');
+    }
+
     const errors = validationResult(req).errors;
 
     if (errors.length > 0) {
