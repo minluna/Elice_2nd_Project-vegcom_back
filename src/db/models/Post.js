@@ -10,6 +10,7 @@ class Post {
                     post.content, \
                     post_image.imageUrl, \
                     user_image.imageUrl as userImage, \
+                    post.parentId, \
                     post.createAt \
             FROM post \
             LEFT JOIN post_image \
@@ -35,6 +36,7 @@ class Post {
                 post.content, \
                 post_image.imageUrl, \
                 user_image.imageUrl as userImage, \
+                post.parentId, \
                 post.createAt \
         FROM post \
         LEFT JOIN post_image \
@@ -61,6 +63,7 @@ class Post {
                     post.content, \
                     post_image.imageUrl, \
                     user_image.imageUrl as userImage, \
+                    post.parentId, \
                     post.createAt \
             FROM post \
             LEFT JOIN post_image \
