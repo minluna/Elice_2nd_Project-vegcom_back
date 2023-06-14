@@ -193,7 +193,7 @@ class userAuthService {
             await mysqlDB.query('START TRANSACTION');
 
             const user = await User.findById({ userId });
-            console.log(user);
+
             if (!user) {
                 throw new NotFoundError('요청한 사용자의 정보를 찾을 수 없습니다.');
             } else {
