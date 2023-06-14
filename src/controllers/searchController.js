@@ -5,9 +5,11 @@ class searchController {
     static async getKeywordPost(req, res, next) {
         try {
             const userId = req.currentUserId;
-            const { keyword } = req.body;
 
-            const keywordPost = await searchService.getPost({ userId, keyword });
+            const keyword = req.query.keyword;
+            const cursor = req.query.cursor;
+
+            const keywordPost = await searchService.getPost({ userId, keyword, cursor });
 
             statusCode.setResponseCode200(res);
             return res.send({ message: keywordPost.message, searchPost: keywordPost.searchPost });

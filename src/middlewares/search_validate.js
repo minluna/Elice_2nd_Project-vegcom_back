@@ -1,15 +1,18 @@
 import { validationResult, body } from 'express-validator';
 import { BadRequestError } from './errorMiddleware.js';
 
-const searchValidationRules = [body('keyword').notEmpty().withMessage('검색 키워드를 입력하세요.')];
-
 const search_validate = (req, res, next) => {
-    const errors = validationResult(req).errors;
-
-    if (errors.length > 0) {
-        throw new BadRequestError(errors[0].msg);
+    const keyword = req.query.keyword;
+    if (!keyword) {
+        throw new BadRequestError('검색 값을 확인해주세요.');
     }
+
+    const cursor = req.query.cursor;
+    if (!cursor || isNaN(cursor)) {
+        throw new BadRequestError('검색의 커서값을 확인해주세요.');
+    }
+
     next();
 };
 
-export { searchValidationRules, search_validate };
+export { search_validate };
