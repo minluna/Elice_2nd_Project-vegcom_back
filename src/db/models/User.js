@@ -52,17 +52,21 @@ class User {
         const [rows2] = await mysqlDB.query(getUserAccuRank, [userId]);
 
         const getUserTodayRank =
-            'SELECT TodayRanking \
+            'SELECT ranking as TodayRanking \
             FROM ( \
-                SELECT ROW_NUMBER() OVER (ORDER BY point.accuPoint DESC) as TodayRanking, user.id, \
-                        (SELECT count(id) FROM post WHERE post.userId = user.id and DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE()) as storyCount \
-                FROM user \
-                LEFT JOIN user_image \
-                ON user.id = user_image.userId \
-                LEFT JOIN point \
-                ON user.id = point.userId \
-                WHERE  deleteAt is null \
-                ORDER BY storyCount desc, createAt asc ) as rankings \
+                SELECT ROW_NUMBER() OVER (ORDER BY user.storyCount DESC, user.accuPoint DESC) as ranking, id, nickname \
+                FROM ( SELECT \
+                            user.id, \
+                            user.email, \
+                            user.nickname, \
+                            user.createAt, \
+                            user_image.imageUrl, \
+                            point.accuPoint, \
+                            (SELECT COUNT(id) FROM post WHERE post.userId = user.id and DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE()) as storyCount \
+                        FROM user \
+                        LEFT JOIN user_image ON user.id = user_image.userId \
+                        LEFT JOIN point ON user.id = point.userId \
+                        WHERE deleteAt IS NULL ) AS user ) as ranking \
             WHERE id = ?';
         const [rows3] = await mysqlDB.query(getUserTodayRank, [userId]);
 
