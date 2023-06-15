@@ -1,6 +1,3 @@
 node_modules
-<<<<<<< HEAD
 .DS_Store
 .env
-=======
->>>>>>> 4becbe4 (Fix : gitignore 추가)
