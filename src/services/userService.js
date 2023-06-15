@@ -206,6 +206,7 @@ class userAuthService {
                         email: user[0].email,
                         nickname: user[0].nickname,
                         userImage: user[0].userImage,
+                        description: user[0].description,
                         accuPoint: user[0].accuPoint,
                         storyCount: user[0].storyCount,
                         createAt: user[0].createAt,

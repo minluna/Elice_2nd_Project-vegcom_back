@@ -27,7 +27,7 @@ class User {
     // 유저ID를 이용하여 유저 검색
     static async findById({ userId }) {
         const getUserById =
-            'SELECT id, email, nickname, user.createAt, user_image.imageUrl as userImage, point.accuPoint, user.createAt, \
+            'SELECT id, email, nickname, user.description, user.createAt, user_image.imageUrl as userImage, point.accuPoint, user.createAt, \
                     (SELECT count(id) FROM post WHERE post.userId = user.id) as storyCount \
             FROM user \
             LEFT JOIN user_image \
