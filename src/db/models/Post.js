@@ -105,9 +105,15 @@ class Post {
     }
 
     //5. 피드 삭제하기
-    static async delete({ postId }) {
+    static async delete({ userId, postId }) {
         const deletePost = 'UPDATE post SET deleteAt = CURRENT_TIMESTAMP WHERE id = ?';
         await mysqlDB.query(deletePost, [postId]);
+
+        const revokePoint =
+            'UPDATE point \
+            SET currentPoint = currentPoint - 100, accuPoint = accuPoint - 100 \
+            WHERE userId = ? AND 2 >= (SELECT datediff(CURDATE(), post.createAt) FROM post WHERE post.id = ?)';
+        await mysqlDB.query(revokePoint, [userId, postId]);
     }
 
     //6. ID로 피드 검색하기

@@ -171,7 +171,7 @@ class postService {
                 throw new NotFoundError('요청한 게시물의 정보를 찾을 수 없습니다.');
             }
 
-            await Post.delete({ postId });
+            await Post.delete({ userId, postId });
 
             await mysqlDB.query('COMMIT');
 
