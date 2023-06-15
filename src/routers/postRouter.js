@@ -20,6 +20,9 @@ postRouter.get('/count', postController.getCount);
 // 7. 특정 유저의 피드 불러오기
 postRouter.get('/mypage/:userId', userParams_validate, postController.getUserPost);
 
+// 8. 특정 유저가 좋아요 한 피드 불러오기
+postRouter.get('/like/:userId', userParams_validate, postController.getUserLikePost);
+
 // 2. 피드 상세페이지
 postRouter.get('/:postId', postParams_validate, postController.getPost);
 

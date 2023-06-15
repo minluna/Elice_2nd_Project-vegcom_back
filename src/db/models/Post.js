@@ -151,6 +151,21 @@ class Post {
 
         return rows;
     }
+
+    //
+    static async getUserLikePost({ likeUserId }) {
+        const postByUser =
+            'SELECT id, \
+                    post_image.imageUrl \
+            FROM post \
+            LEFT JOIN post_image \
+            ON post.id = post_image.postId \
+            WHERE id IN (SELECT postId FROM post_like where userId = ?) AND post.deleteAt is NULL ORDER BY post.createAt DESC';
+
+        const [rows] = await mysqlDB.query(postByUser, [likeUserId]);
+
+        return rows;
+    }
 }
 
 export { Post };

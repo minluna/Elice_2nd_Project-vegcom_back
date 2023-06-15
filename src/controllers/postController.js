@@ -111,6 +111,21 @@ class postController {
             next(error);
         }
     }
+
+    // 8. 특정 유저가 좋아요 한 피드 불러오기
+    static async getUserLikePost(req, res, next) {
+        try {
+            const userId = req.currentUserId;
+            const likeUserId = req.params.userId;
+
+            const postList = await postService.getUserByLikePost({ userId, likeUserId });
+
+            statusCode.setResponseCode200(res);
+            res.send({ message: postList.message, userLikePostList: postList.userLikePostList });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export { postController };
