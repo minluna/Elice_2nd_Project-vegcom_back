@@ -8,7 +8,7 @@ class commentService {
 
             const user = await User.findById({ userId });
 
-            if (!user) {
+            if (!user[0]) {
                 throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
             }
 
@@ -36,7 +36,7 @@ class commentService {
 
             const user = await User.findById({ userId });
 
-            if (!user) {
+            if (!user[0]) {
                 throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
             }
 
@@ -72,7 +72,7 @@ class commentService {
 
             const user = await User.findById({ userId });
 
-            if (!user) {
+            if (!user[0]) {
                 throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
             }
 
@@ -108,7 +108,7 @@ class commentService {
             let CommentList = [];
             const user = await User.findById({ userId });
 
-            if (!user) {
+            if (!user[0]) {
                 throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
             }
 
