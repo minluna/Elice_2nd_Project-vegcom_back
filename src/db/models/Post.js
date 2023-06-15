@@ -112,7 +112,7 @@ class Post {
         const revokePoint =
             'UPDATE point \
             SET currentPoint = currentPoint - 100, accuPoint = accuPoint - 100 \
-            WHERE userId = ? AND currentPoint ! = 0 AND accuPoint ! = 0 AND 2 >= (SELECT datediff(CURDATE(), post.createAt) FROM post WHERE post.id = ?)';
+            WHERE userId = ? AND currentPoint > 0 AND accuPoint > 0 AND 2 >= (SELECT datediff(CURDATE(), post.createAt) FROM post WHERE post.id = ?)';
         await mysqlDB.query(revokePoint, [userId, postId]);
     }
 
