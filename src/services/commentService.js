@@ -17,7 +17,6 @@ class commentService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '댓글 추가하기에 성공했습니다.',
             };
         } catch (error) {
@@ -52,7 +51,6 @@ class commentService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '댓글 수정하기에 성공하셨습니다.',
             };
         } catch (error) {
@@ -89,7 +87,6 @@ class commentService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '댓글 삭제하기에 성공하셨습니다.',
             };
         } catch (error) {
@@ -105,10 +102,10 @@ class commentService {
         }
     }
 
-    static async getComment({ userId, postId }) {
+    static async getComment({ userId, postId, cursor }) {
         try {
             await mysqlDB.query('START TRANSACTION');
-
+            let CommentList = [];
             const user = await User.findById({ userId });
 
             if (!user) {
@@ -121,14 +118,20 @@ class commentService {
                 throw new NotFoundError('요청한 게시물의 정보를 찾을 수 없습니다.');
             }
 
-            const CommentList = await Comment.select({ postId });
+            if (cursor == 0) {
+                CommentList = await Comment.zeroComment({ postId });
+            } else if (cursor == -1) {
+                CommentList = ['전체 댓글 조회가 끝났습니다.', '전체 댓글 조회가 끝났습니다.'];
+            } else {
+                CommentList = await Comment.select({ postId, cursor });
+            }
 
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '게시글 총 댓글 불러오기에 성공하셨습니다.',
-                CommentList,
+                CommentListZero: CommentList[0],
+                CommentListOther: CommentList[1],
             };
         } catch (error) {
             await mysqlDB.query('ROLLBACK');

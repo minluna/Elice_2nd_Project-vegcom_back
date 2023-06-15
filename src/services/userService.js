@@ -8,7 +8,6 @@ import {
 } from '../middlewares/errorMiddleware.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { s3 } from '../aws.config.js';
 
 class userAuthService {
     // 유저 생성
@@ -36,7 +35,6 @@ class userAuthService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '회원가입에 성공했습니다.',
             };
         } catch (error) {
@@ -80,7 +78,6 @@ class userAuthService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '로그인에 성공했습니다.',
                 token,
                 userId: user.id,
@@ -111,7 +108,6 @@ class userAuthService {
                 await mysqlDB.query('COMMIT');
 
                 return {
-                    statusCode: 200,
                     message: '정상적인 유저입니다.',
                     userId: user.id,
                     email: user.email,
@@ -142,7 +138,6 @@ class userAuthService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '유저 포인트 내역 불러오기에 성공했습니다.',
                 userPoint: {
                     userId: getUserPoint.id,
@@ -178,7 +173,6 @@ class userAuthService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '전체 유저 수 불러오기에 성공하셨습니다.',
                 userCount: getUserCount.userCount,
             };
@@ -206,13 +200,17 @@ class userAuthService {
                 await mysqlDB.query('COMMIT');
 
                 return {
-                    statusCode: 200,
                     message: '유저 정보 불러오기에 성공하셨습니다.',
                     userInfo: {
-                        id: user.id,
-                        email: user.email,
-                        nickname: user.nickname,
-                        userImage: user.userImage,
+                        id: user[0].id,
+                        email: user[0].email,
+                        nickname: user[0].nickname,
+                        userImage: user[0].userImage,
+                        accuPoint: user[0].accuPoint,
+                        storyCount: user[0].storyCount,
+                        createAt: user[0].createAt,
+                        AccuRanking: user[1].AccuRanking,
+                        TodayRanking: user[2].TodayRanking,
                     },
                 };
             }
@@ -242,7 +240,6 @@ class userAuthService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '유저 정보 수정하기에 성공하셨습니다.',
             };
         } catch (error) {
@@ -272,7 +269,6 @@ class userAuthService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '유저 정보 삭제하기에 성공하셨습니다.',
             };
         } catch (error) {

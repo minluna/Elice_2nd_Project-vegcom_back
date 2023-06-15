@@ -2,9 +2,10 @@ import { mysqlDB, User, Search } from '../db/index.js';
 import { UnauthorizedError, InternalServerError } from '../middlewares/errorMiddleware.js';
 
 class searchService {
-    static async getPost({ userId, keyword }) {
+    static async getPost({ userId, keyword, cursor }) {
         try {
             await mysqlDB.query('START TRANSACTION');
+            let searchPost = [];
 
             const user = await User.findById({ userId });
 
@@ -12,12 +13,17 @@ class searchService {
                 throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
             }
 
-            const searchPost = await Search.select({ keyword });
+            if (cursor == 0) {
+                searchPost = await Search.select({ keyword });
+            } else if (cursor == -1) {
+                searchPost = '검색어가 포함된 게시물 조회가 끝났습니다.';
+            } else {
+                searchPost = await Search.selectKeyword({ keyword, cursor });
+            }
 
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '키워드를 포함한 게시물 불러오기에 성공했습니다.',
                 searchPost,
             };

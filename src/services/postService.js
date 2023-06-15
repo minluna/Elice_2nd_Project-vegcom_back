@@ -3,9 +3,10 @@ import { UnauthorizedError, NotFoundError, InternalServerError } from '../middle
 
 class postService {
     //1. 전체 피드 시간순
-    static async getAllPosts({ userId }) {
+    static async getAllPosts({ userId, cursor }) {
         try {
             await mysqlDB.query('START TRANSACTION');
+            let posts = [];
 
             const user = await User.findById({ userId });
 
@@ -13,17 +14,28 @@ class postService {
                 throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
             }
 
-            const posts = await Post.getAllPosts();
+            if (cursor == 0) {
+                posts = await Post.recentPost();
+            } else if (cursor == -1) {
+                posts = '전체 게시물 조회가 끝났습니다.';
+            } else {
+                posts = await Post.getAllPosts({ cursor });
+            }
 
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '게시물 전체 조회를 성공했습니다.',
                 posts,
             };
         } catch (error) {
-            throw error;
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError('게시물 전체 조회를 실패했습니다.');
+            }
         }
     }
 
@@ -49,7 +61,6 @@ class postService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '게시물 상세 조회를 성공했습니다.',
                 post,
             };
@@ -84,7 +95,6 @@ class postService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 201,
                 message: '게시물 작성을 성공했습니다.',
             };
         } catch (error) {
@@ -129,7 +139,6 @@ class postService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '게시물 수정을 성공했습니다.',
             };
         } catch (error) {
@@ -162,12 +171,11 @@ class postService {
                 throw new NotFoundError('요청한 게시물의 정보를 찾을 수 없습니다.');
             }
 
-            await Post.delete({ postId });
+            await Post.delete({ userId, postId });
 
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '게시물 삭제를 성공했습니다.',
             };
         } catch (error) {
@@ -199,7 +207,6 @@ class postService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '피드 수와 피드를 작성한 유저 수 불러오기에 성공했습니다.',
                 postCount: count.postCount,
                 userCount: count.userCount,
@@ -210,7 +217,67 @@ class postService {
             if (error instanceof UnauthorizedError) {
                 throw error;
             } else {
-                throw new InternalServerError('피드 수와 피드를 작성한 유저 수 불러오기에 성공했습니다.');
+                throw new InternalServerError('피드 수와 피드를 작성한 유저 수 불러오기에 실패했습니다.');
+            }
+        }
+    }
+
+    //
+    static async getUserByPost({ userId, postUserId }) {
+        try {
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
+            const userPostList = await Post.getUserPost({ postUserId });
+
+            await mysqlDB.query('COMMIT');
+
+            return {
+                message: '유저가 작성한 피드 정보 불러오기에 성공했습니다.',
+                userPostList,
+            };
+        } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError('유저가 작성한 피드 정보 불러오기에 실패했습니다.');
+            }
+        }
+    }
+
+    //
+    static async getUserByLikePost({ userId, likeUserId }) {
+        try {
+            await mysqlDB.query('START TRANSACTION');
+
+            const user = await User.findById({ userId });
+
+            if (!user) {
+                throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
+            }
+
+            const userLikePostList = await Post.getUserLikePost({ likeUserId });
+
+            await mysqlDB.query('COMMIT');
+
+            return {
+                message: '유저가 작성한 피드 정보 불러오기에 성공했습니다.',
+                userLikePostList,
+            };
+        } catch (error) {
+            await mysqlDB.query('ROLLBACK');
+
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            } else {
+                throw new InternalServerError('유저가 작성한 피드 정보 불러오기에 실패했습니다.');
             }
         }
     }

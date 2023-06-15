@@ -14,13 +14,11 @@ class likeService {
                 throw new UnauthorizedError('잘못된 또는 만료된 토큰입니다.');
             }
 
-            const likeUser = await Like.isLiked({ userId, postId });
-            const likeCount = await Like.getLike({ postId });
+            const [likeUser, likeCount] = await Promise.all([Like.isLiked({ userId, postId }), Like.getLike({ postId })]);
 
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '좋아요 여부 확인 및 좋아요 누적수 불러오기에 성공했습니다.',
                 likeUser,
                 likeCount: likeCount.likeCount,
@@ -58,7 +56,6 @@ class likeService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '좋아요 목록 생성에 성공하셨습니다.',
             };
         } catch (error) {
@@ -90,7 +87,6 @@ class likeService {
             await mysqlDB.query('COMMIT');
 
             return {
-                statusCode: 200,
                 message: '좋아요 목록 삭제에 성공하였습니다.',
             };
         } catch (error) {
