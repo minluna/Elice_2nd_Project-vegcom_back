@@ -194,7 +194,7 @@ class userAuthService {
 
             const user = await User.findById({ userId });
 
-            if (!user) {
+            if (!user[0]) {
                 throw new NotFoundError('요청한 사용자의 정보를 찾을 수 없습니다.');
             } else {
                 await mysqlDB.query('COMMIT');
