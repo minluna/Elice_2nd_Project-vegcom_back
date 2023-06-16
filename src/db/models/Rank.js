@@ -7,7 +7,7 @@ class Rank {
                     user.nickname, \
                     user_image.imageUrl as userImage, \
                     point.accuPoint, \
-                    (SELECT count(id) FROM post WHERE post.userId = user.id) as storyCount \
+                    (SELECT count(id) FROM post WHERE post.userId = user.id  AND post.deleteAt is NULL) as storyCount \
                     FROM user \
                     LEFT JOIN user_image \
                     ON user.id = user_image.userId \
