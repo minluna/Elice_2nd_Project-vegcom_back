@@ -88,7 +88,7 @@ class Post {
 
         const grantPoint =
             'UPDATE point \
-            SET currentPoint = currentPoint + 100, accuPoint = accuPoint + 100 \
+            SET currentPoint = currentPoint + 1000, accuPoint = accuPoint + 1000 \
             WHERE userId = ? AND 3 >= (select count(id) from post where userId = ? and DATE_FORMAT(createAt, "%Y-%m-%d") = CURDATE())';
         await mysqlDB.query(grantPoint, [userId, userId]);
     }
@@ -111,7 +111,7 @@ class Post {
 
         const revokePoint =
             'UPDATE point \
-            SET currentPoint = currentPoint - 100, accuPoint = accuPoint - 100 \
+            SET currentPoint = currentPoint - 1000, accuPoint = accuPoint - 1000 \
             WHERE userId = ? AND currentPoint > 0 AND accuPoint > 0 AND 2 >= (SELECT datediff(CURDATE(), post.createAt) FROM post WHERE post.id = ?)';
         await mysqlDB.query(revokePoint, [userId, postId]);
     }
