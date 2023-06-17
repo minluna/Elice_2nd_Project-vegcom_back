@@ -2,7 +2,7 @@
 
 <br/>
 
-<img src="./front/public/logoshort.png" alt="logo" width="10%" />
+<img src="./public/logoshort.png" alt="logo" width="10%" />
 
 <br/>
 
