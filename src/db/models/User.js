@@ -28,7 +28,7 @@ class User {
     static async findById({ userId }) {
         const getUserById =
             'SELECT id, email, nickname, user.description, user.createAt, user_image.imageUrl as userImage, point.accuPoint, user.createAt, \
-                    (SELECT count(id) FROM post WHERE post.userId = user.id) as storyCount \
+                    (SELECT count(id) FROM post WHERE post.userId = user.id  AND post.deleteAt is NULL) as storyCount \
             FROM user \
             LEFT JOIN user_image \
             ON user.id = user_image.userId \
