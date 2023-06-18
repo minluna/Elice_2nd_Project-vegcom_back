@@ -26,7 +26,7 @@
 -   znddiqjwjs@gmail.com
 -   Github: [@minluna](https://github.com/minluna)
 
-    **정재훈**
+**정재훈**
 
 -   Back-End
 -   wjdwogns120523@gmail.com
@@ -44,7 +44,7 @@
 -   pisouz7@gmail.com
 -   Github:[@yyoungl](https://github.com/yyoungl)
 
-    **최우현**
+**최우현**
 
 -   Front-End
 -   woohyun6549@gamil.com
@@ -137,7 +137,7 @@
 ## 🔎 주요기능
 
 -   **회원가입, 로그인 기능**: 사용자의 회원 가입 및 로그인 기능 제공
--   **식단 업로드 기능**: 비건, 베지테리언 식단 업로드 가능능
+-   **식단 업로드 기능**: 비건, 베지테리언 식단 업로드 가능
 -   **피드 댓글, 대댓글 기능**: 식단 피드에서 댓글, 대댓글을 통해 유저들과 소통 가능
 -   **탄소 배출 감소량에 따른 포인트 부여**: 식단 피드 업로드하면 포인트 부여
 -   **마이페이지 기능**:
